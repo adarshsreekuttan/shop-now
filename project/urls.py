@@ -23,5 +23,5 @@ urlpatterns = [
     path('core/', include('core.urls')),
     path('customer/', include('customer.urls')),
     path('seller/', include('seller.urls')),
-    path('myadmin/', include('admin.urls')),
+    path('myadmin/', include('custom_admin.urls')),
 ]
