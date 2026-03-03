@@ -1,6 +1,9 @@
 from django.shortcuts import render,redirect
-from seller.models import SellerProfile
-from core.models import Product,SubCategory
+from .models import SellerProfile
+from core.models import User
+from django.contrib.auth import get_user_model 
+from core.models import Product
+from custom_admin.models import SubCategory
 from django.contrib.auth.hashers import make_password,check_password
 from django.contrib import messages
 from django.utils.text import slugify
@@ -8,19 +11,38 @@ from django.utils.text import slugify
 
 # Create your views here.
 def seller_registration(request):
-    if request.method == "POST":
-        seller=SellerProfile()
-        seller.shop_name=request.POST.get('shop_name')
-        seller.password=make_password(request.POST.get('password'))
-        seller.email=request.POST.get('email')
-        seller.phone=request.POST.get('phone')
-        seller.address=request.POST.get('address')
-        seller.pincode=request.POST.get('pincode')
-        seller.state=request.POST.get('state')
-        seller.city=request.POST.get('city')
-        seller.gst_number=request.POST.get('gst_number')
-        seller.save()
-        return redirect('seller_login')
+    if request.method=='POST':
+        email=request.POST.get('email')
+        password=request.POST.get('password')
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request,'email already registered')
+            return redirect('seller_login')
+        if password!=request.POST.get('confirm_password'):
+            messages.error(request,'password in not matched')
+            return redirect('seller_login')
+        user=User.objects.create_user(
+            username=email,
+            email=email,
+            password=password,
+            phone=request.POST.get('phone'),
+            role='seller',
+            is_verified=False
+                    )
+        SellerProfile.objects.create(
+                user=user,
+                shop_name=request.POST.get('shop_name'),
+                address=request.POST.get('address'),
+                pincode=request.POST.get('pincode'),
+                state=request.POST.get('state'),
+                city=request.POST.get('city'),
+                gst_number=request.POST.get('gst_number'),        
+                )
+        print("EMAIL:", email)
+        print("PASSWORD:", password)
+        print("CONFIRM:", request.POST.get('confirm_password'))
+        messages.success(request,'succesfully created seller account')
+        return redirect('seller_login')     
     return render(request,"seller/seller_registration.html")
 
 def seller_login(request):
@@ -35,6 +57,7 @@ def seller_login(request):
                 return redirect('seller_home')
         except SellerProfile.DoesNotExist:
             messages.error(request,"seller not found !!")  
+            
     return render(request,"seller/seller_login.html")
 
 def seller_home(request):
@@ -78,7 +101,7 @@ def seller_add_product(request):
         product.stock=request.POST.get('stock')
         product.sub_category=SubCategory.objects.get(id=request.POST.get('sub_category'))        
         base_slug=slugify(product.name)
-        
+    
         slug=base_slug
         count=1
         

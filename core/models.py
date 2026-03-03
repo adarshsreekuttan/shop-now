@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from seller.models import SubCategory
+from django.conf import settings
+
 
 class User(AbstractUser):
  
@@ -25,17 +26,24 @@ class User(AbstractUser):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=200)
+
+    seller_name = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     slug = models.SlugField(unique=True,null=True,blank=True)
 
     price = models.IntegerField()
     discount_price = models.IntegerField()
-
+    STATS_CHOICES=(
+        ('pending','PENDING'),
+        ('apporved','APPORVED'),
+        ('rejected','REJECTED'),
+        
+    )
+    status=models.CharField(max_length=10,null=True)
     description = models.CharField(max_length=200)
     stock = models.PositiveIntegerField(default=1)
     available = models.BooleanField(default=True)
     
-    sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
+    sub_category = models.ForeignKey('custom_admin.SubCategory', on_delete=models.CASCADE,null=True,blank=True)
     image=models.ImageField(upload_to='products_image/',null=True,blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
