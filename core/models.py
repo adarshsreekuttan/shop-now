@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.conf import settings
 
 
 class User(AbstractUser):
@@ -27,9 +26,13 @@ class User(AbstractUser):
 
 class Product(models.Model):
 
+<<<<<<< HEAD
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+=======
+    seller_name = models.ForeignKey('seller.SellerProfile', on_delete=models.CASCADE, null=True, blank=True)
+    name=models.CharField(max_length=100,null=True)
+>>>>>>> de37637c36f59b804a86ffd9e70a5e77d2d9fbf2
     slug = models.SlugField(unique=True,null=True,blank=True)
-
     price = models.IntegerField()
     discount_price = models.IntegerField()
     STATUS_CHOICES = (
@@ -44,7 +47,13 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=1)
     available = models.BooleanField(default=True)
     
+<<<<<<< HEAD
     sub_category = models.ForeignKey('seller.SubCategory', on_delete=models.CASCADE)
+=======
+    category = models.ForeignKey('seller.Category', on_delete=models.CASCADE,null=True,blank=True)
+    sub_category = models.ForeignKey('seller.SubCategory', on_delete=models.CASCADE,null=True,blank=True)
+    image=models.ImageField(upload_to='products_image/',null=True,blank=True)
+>>>>>>> de37637c36f59b804a86ffd9e70a5e77d2d9fbf2
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -52,15 +61,4 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-class Category(models.Model):
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True)
-    description = models.TextField(blank=True)
-    is_activate = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
-
-class SubCategory(models.Model):
-    category = models.ForeignKey(Category,on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    is_active = models.BooleanField(default=True)
