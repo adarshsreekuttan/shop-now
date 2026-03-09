@@ -26,19 +26,9 @@ class User(AbstractUser):
 
 
 class Product(models.Model):
-
-<<<<<<< HEAD
     seller_name = models.ForeignKey('seller.SellerProfile', on_delete=models.CASCADE, null=True, blank=True)
     name=models.CharField(max_length=100,null=True)
     slug = models.SlugField(unique=True,null=True,blank=True)
-=======
-    seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-
-    name = models.CharField(max_length=100, null=True)
-
-    slug = models.SlugField(unique=True, null=True, blank=True)
-
->>>>>>> b5cc2bb00a5b4cb55b22ee788ffa5dcb172caa30
     price = models.IntegerField()
     discount_price = models.IntegerField()
 
@@ -54,28 +44,10 @@ class Product(models.Model):
 
     stock = models.PositiveIntegerField(default=1)
 
-    available = models.BooleanField(default=True)
-<<<<<<< HEAD
-    
+    available = models.BooleanField(default=True)    
     category = models.ForeignKey('seller.Category', on_delete=models.CASCADE,null=True,blank=True)
     sub_category = models.ForeignKey('seller.SubCategory', on_delete=models.CASCADE,null=True,blank=True)
     image=models.ImageField(upload_to='products_image/',null=True,blank=True)
-=======
-
-    category = models.ForeignKey(
-        'seller.Category',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True
-    )
-
-    sub_category = models.ForeignKey(
-        'seller.SubCategory',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True
-    )
->>>>>>> b5cc2bb00a5b4cb55b22ee788ffa5dcb172caa30
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

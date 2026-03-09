@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-
 from django.shortcuts import render,redirect
 from django.contrib.auth import login,authenticate,logout
 from django.contrib.auth import get_user_model,update_session_auth_hash
