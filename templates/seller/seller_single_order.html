@@ -1,0 +1,155 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details - FlipShop Seller Hub</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary_dark: '#362F4F',
+                        primary: '#5B23FF',
+                        accent: '#008BFF',
+                        highlight: '#E4FF30',
+                        bg_light: '#F1F3F6',
+                        text_dark: '#212121',
+                        text_gray: '#878787'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F1F3F6; }
+        .card-shadow { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+    </style>
+</head>
+<body class="text-text_dark">
+
+    <nav class="bg-primary_dark sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-4 py-3 h-16 flex items-center justify-between">
+            <a href="{% url 'seller_home' %}" class="flex items-center gap-2 text-white hover:text-highlight transition">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span class="font-medium text-sm">Back to Dashboard</span>
+            </a>
+            <div class="text-white font-bold text-lg tracking-wide">
+                FlipShop <span class="text-xs font-normal text-highlight ml-1">Seller Hub</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8 max-w-5xl">
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-primary_dark">Order #{{ order.id }}</h1>
+                <p class="text-text_gray text-sm mt-1">Placed on {{ orders.created_at|date:"F j, Y, g:i a" }}</p>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-text_gray">Current Status:</span>
+                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide
+                    {% if order.status == 'pending' %} bg-yellow-100 text-yellow-700
+                    {% elif order.status == 'processing' %} bg-blue-100 text-blue-700
+                    {% elif order.status == 'shipped' %} bg-purple-100 text-purple-700
+                    {% elif order.status == 'delivered' %} bg-green-100 text-green-700
+                    {% elif order.status == 'cancelled' %} bg-red-100 text-red-700
+                    {% endif %}">
+                    {{ order.get_status_display }}
+                </span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="lg:col-span-2 space-y-6">
+                
+                <section class="bg-white rounded-xl p-6 card-shadow">
+                    <h2 class="text-lg font-bold border-b border-gray-100 pb-3 mb-4"><i class="fa-regular fa-address-card text-primary mr-2"></i>Customer Information</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <div>
+                            <h3 class="text-xs font-bold text-gray-400 uppercase mb-2">Account Details</h3>
+                            <p class="font-medium">{{ orders.user.get_full_name }}</p>
+                            <p class="text-sm text-text_gray mt-1">{{ orders.user.email }}</p>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xs font-bold text-gray-400 uppercase mb-2">Shipping Address</h3>
+                            <div class="text-sm text-gray-700 space-y-1">
+                                <p>{{ orders.address.full_name }}</p>
+                                <p>{{ orders.address.house_name }},{{ orders.address.street }}</p>
+                                <p>{{ orders.address.city }}, {{ orders.address.state }} {{ orders.address.pincode }}</p>
+                                <p class="mt-2 text-text_gray"><i class="fa-solid fa-phone text-xs mr-1"></i> {{ orders.address.phone }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-white rounded-xl p-6 card-shadow">
+                    <h2 class="text-lg font-bold border-b border-gray-100 pb-3 mb-4"><i class="fa-solid fa-wallet text-primary mr-2"></i>Payment Details</h2>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Payment Method</p>
+                            <p class="text-lg font-bold text-primary_dark mt-1 uppercase">{{ orders.payment_method }}</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center text-green-600 text-xl">
+                            <i class="fa-solid fa-check-double"></i>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <div class="space-y-6">
+                
+                <section class="bg-white rounded-xl p-6 card-shadow border-t-4 border-primary">
+                    <h2 class="text-lg font-bold mb-4">Update Order Status</h2>
+                    <p class="text-xs text-text_gray mb-4">Keep your customers informed by updating the shipping status.</p>
+                    
+                    <form action="{% url 'seller_order_status' orders.id %}" method="POST" class="space-y-4">
+                        {% csrf_token %}
+                        <div>
+
+                            <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Select Status</label>
+                            <select name="status" id="status" class="w-full h-10 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm">
+                                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="processing" {% if order.status == 'processing' %}selected{% endif %}>Processing</option>
+                                <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Shipped</option>
+                                <option value="delivered" {% if orders.status == 'delivered' %}selected{% endif %}>Delivered</option>
+                                <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-primary hover:bg-opacity-90 text-white font-medium py-2.5 rounded-md transition shadow-md text-sm">
+                            Update Status
+                        </button>
+                    </form>
+                </section>
+
+                <section class="bg-blue-50 rounded-xl p-5 border border-blue-100">
+                    <div class="flex gap-3">
+                        <i class="fa-solid fa-circle-info text-accent mt-0.5"></i>
+                        <div>
+                            <h4 class="text-sm font-bold text-primary_dark">Need Help?</h4>
+                            <p class="text-xs text-gray-600 mt-1 leading-relaxed">If the customer requested a cancellation or you are facing fulfillment issues, please contact seller support.</p>
+                            <a href="#" class="text-xs font-bold text-accent hover:underline mt-2 inline-block">Contact Support &rarr;</a>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

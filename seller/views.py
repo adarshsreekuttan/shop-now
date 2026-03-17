@@ -1,11 +1,11 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth import login,authenticate,logout
 from django.contrib.auth import get_user_model,update_session_auth_hash
-from .models import SellerProfile,SubCategory,Category
+from .models import SellerProfile,SubCategory,Category,ProductImage
 from django.contrib import messages
 from django.utils.text import slugify
 from core.models import User, Product
-from core.models import User, Product
+from customer.models import Order
 from .decorators import seller_required
 from django.http import JsonResponse
 
@@ -78,7 +78,7 @@ def seller_logout(request):
 def seller_home(request):
     seller=request.user
     sellerprofile=seller.seller_profile
-    product=Product.objects.all()
+    product=Product.objects.filter(seller=sellerprofile,approved=True)
     return render(request, "seller/seller_home.html",{'sellerprofile':sellerprofile,'product':product})  
 
 @seller_required
@@ -92,9 +92,11 @@ def seller_profile_edit(request):
     seller=request.user
     sellerprofile=seller.seller_profile  
     if request.method == "POST":
+        seller.email=request.POST.get('email')
+        seller.phone=request.POST.get('phone')
+        seller.save()
+        
         sellerprofile.shop_name=request.POST.get('shop_name')
-        sellerprofile.email=request.POST.get('email')
-        sellerprofile.phone=request.POST.get('phone')
         sellerprofile.address=request.POST.get('address')
         sellerprofile.pincode=request.POST.get('pincode')
         sellerprofile.state=request.POST.get('state')
@@ -112,20 +114,22 @@ def seller_profile_edit(request):
 
 @seller_required
 def seller_add_product(request):
+    seller=SellerProfile.objects.get(user=request.user)
     subcategory=SubCategory.objects.all()
     category=Category.objects.all()
     if request.method=="POST":
         product=Product()
+        product.seller=seller
         product.name=request.POST.get('product_name')
         product.price=request.POST.get('product_price')
-        product.image=request.FILES.get('product_image')
         product.discount_price=request.POST.get('discount_price')
         product.description=request.POST.get('description')
         product.stock=request.POST.get('stock')
         sub_category_slug=request.POST.get('sub_category')        
-        product.sub_category=SubCategory.objects.get(slug=sub_category_slug)        
-        category_slug=request.POST.get('category')      
-        product.category=Category.objects.get(slug=category_slug)        
+        product.sub_category=SubCategory.objects.filter(slug=sub_category_slug).first()       
+        category_slug=request.POST.get('category') 
+        print(request.POST)     
+        product.category=Category.objects.filter(slug=category_slug).first()       
         base_slug=slugify(product.name)
     
         slug=base_slug
@@ -138,43 +142,71 @@ def seller_add_product(request):
         
         product.slug= slug
         product.save()
-        return redirect('seller_home')        
+        images=request.FILES.getlist('product_image')
+        for img in images:
+            ProductImage.objects.create(
+                product=product,
+                image=img
+            )
+        return redirect('seller_approval')        
     return render(request,"seller/seller_add_product.html",{'category':category,'subcategory':subcategory})
 
 @seller_required
+def seller_approval(request):
+    return render(request,'seller/seller_approval.html')
+
+@seller_required
+def seller_pending_approval(request):
+    product=Product.objects.filter(approved=False)
+    return render(request,"seller/seller_pending_approval.html",{'product':product})
+
+def pending_product_delete(request,id):
+    seller=SellerProfile.objects.get(user=request.user)
+    product=get_object_or_404(Product,approved=False,id=id,seller=seller)
+    product.delete()
+    return redirect('seller_pending_approval')
+
+@seller_required
 def seller_product_view(request,slug):
-    product=Product.objects.get(slug=slug)
+    product=Product.objects.get(slug=slug,approved=True)
+    if product.approved==False:
+        return redirect('seller_pending_approval')
     return render(request,"seller/seller_product_view.html",{'product':product})
 
 @seller_required
 def seller_product_edit(request,slug):
-    product=Product.objects.get(slug=slug)
+    product=Product.objects.get(slug=slug,approved=True)
     subcategory=SubCategory.objects.all()
     if request.method=="POST":
         name=request.POST.get('product_name')
         product.name=name
         product.price=request.POST.get('product_price')
-        product.image=request.FILES.get('product_image')
         product.discount_price=request.POST.get('discount_price')
         product.description=request.POST.get('description')
         product.stock=request.POST.get('stock')
         product.sub_category=SubCategory.objects.get(id=request.POST.get('sub_category'))        
-        base_slug=slugify(product.name)
         
-        if product.name != slugify(name):
-            base_slug=slugify(name)
-            new_slug=base_slug
-            count=1  
-            while Product.objects.filter(slug=new_slug).exclude(id=product.id).exists():
-                slug=f"{base_slug}-{count}"
+        base_slug=slugify(name)
+        new_slug=base_slug
+        count=1  
+        while Product.objects.filter(slug=new_slug).exclude(id=product.id).exists():
+                new_slug=f"{base_slug}-{count}"
                 count+=1        
-        product.slug= slug
+        product.slug= new_slug
+        product.status="pending"
         product.save()
-        
+        images=request.FILES.getlist('product_image')
+        if images:
+            ProductImage.objects.filter(product=product).delete()
+            for img in images:
+                ProductImage.objects.create(
+                    product=product,
+                    image=img
+                )        
         return redirect('seller_product_view',slug=product.slug)        
     return render(request,"seller/seller_product_edit.html",{'product':product,'subcategory':subcategory})
 def product_delete(request,id):
-    product=Product.objects.get(id=id)
+    product=Product.objects.get(id=id,approved=True)
     product.delete()
     return redirect('seller_home')
 
@@ -185,3 +217,59 @@ def load_subcategory(request):
     category_slug=request.GET.get('category_slug')
     subcategories=SubCategory.objects.filter(category__slug=category_slug).values('id','name')
     return JsonResponse(list(subcategories),safe=False)
+
+def seller_orders(request):
+    seller=SellerProfile.objects.get(user=request.user)
+    orders=Order.objects.filter(orderitem__product__seller=seller)
+    return render(request,"seller/seller_orders.html",{'orders':orders})
+
+def seller_single_order(request,id):
+    orders=get_object_or_404(Order,id=id)
+    return render(request,'seller/seller_single_order.html',{'orders':orders})
+
+def seller_order_status(request,id):
+    orders=get_object_or_404(Order,id=id)
+    if request.method=="POST":
+        status=request.POST.get('status')
+        orders.status=status
+        orders.save()
+    return redirect('seller_orders')
+
+def pending_single(request,slug):
+    product=Product.objects.get(slug=slug,approved=False)
+    return render(request,'seller/pending_single.html',{'product':product})
+def pending_edit(request,slug):
+    product=Product.objects.get(slug=slug,approved=False)
+    subcategory=SubCategory.objects.all()
+    if request.method=="POST":
+        name=request.POST.get('product_name')
+        product.name=name
+        product.price=request.POST.get('product_price')
+        product.discount_price=request.POST.get('discount_price')
+        product.description=request.POST.get('description')
+        product.stock=request.POST.get('stock')
+        product.sub_category=SubCategory.objects.get(id=request.POST.get('sub_category'))        
+        
+        base_slug=slugify(name)
+        new_slug=base_slug
+        count=1  
+        while Product.objects.filter(slug=new_slug).exclude(id=product.id).exists():
+                new_slug=f"{base_slug}-{count}"
+                count+=1        
+        product.slug= new_slug
+        product.status="pending"
+        product.save()
+        images=request.FILES.getlist('product_image')
+        if images:
+            ProductImage.objects.filter(product=product).delete()
+            for img in images:
+                ProductImage.objects.create(
+                    product=product,
+                    image=img
+                )        
+        return redirect('pending_single',slug=product.slug)        
+    return render(request,"seller/pending_edit.html",{'product':product,'subcategory':subcategory})
+
+def message(request):
+    return render(request,'seller/message.html')
+    

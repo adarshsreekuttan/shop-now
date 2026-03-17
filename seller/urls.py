@@ -11,9 +11,19 @@ urlpatterns = [
     path('seller_profile_edit',views.seller_profile_edit,name="seller_profile_edit"),
     path('seller_password',views.seller_password,name="seller_password"),
     path('seller_add_product',views.seller_add_product,name="seller_add_product"),
+    path('seller_approval',views.seller_approval,name="seller_approval"),
+    path('seller_pending_approval',views.seller_pending_approval,name='seller_pending_approval'),
+    path('pending_product_delete/<int:id>',views.pending_product_delete,name='pending_product_delete'),
     path('seller_product_view/<str:slug>',views.seller_product_view,name="seller_product_view"),
     path('seller_product_edit/<str:slug>',views.seller_product_edit,name="seller_product_edit"),
     path('product_delete/<int:id>',views.product_delete,name='product_delete'),
     path('ajax/load_subcategory',views.load_subcategory,name='load_subcategory'),
+    path('seller_orders',views.seller_orders,name='seller_orders'),
+    path('seller_single_order/<int:id>',views.seller_single_order,name='seller_single_order'),
+    path('seller_order_status/<int:id>',views.seller_order_status,name='seller_order_status'),
+    path('pending_single/<str:slug>',views.pending_single,name='pending_single'),
+    path('pending_edit/<str:slug>',views.pending_edit,name='pending_edit'),
+    path('message',views.message,name='message'),
+
 ]
 

@@ -55,7 +55,7 @@ def customer_register(request):
     return render(request,'customer/register.html')
 
 def home_view(request):
-    products = Product.objects.all()
+    products = Product.objects.filter(approved=True)
     category = Category.objects.all()
 
     for product in products:

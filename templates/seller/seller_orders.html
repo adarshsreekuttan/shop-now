@@ -1,0 +1,184 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlipShop - My Orders</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary_dark: '#362F4F',
+                        primary: '#5B23FF',
+                        accent: '#008BFF',
+                        highlight: '#E4FF30',
+                        bg_light: '#F1F3F6',
+                        text_dark: '#212121',
+                        text_gray: '#878787'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F1F3F6; }
+        .card-shadow { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+    </style>
+</head>
+<body class="text-text_dark flex flex-col min-h-screen">
+
+    <nav class="bg-primary_dark sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
+            <a href="{% url 'seller_home' %}" class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-highlight rounded flex items-center justify-center text-primary_dark font-bold text-xl italic">F</div>
+                <span class="text-white font-bold text-lg tracking-wide hidden sm:block">FlipShop <span class="text-xs font-normal text-highlight ml-1">Seller Hub</span></span>
+            </a>
+            <div class="flex items-center gap-4 text-white font-medium text-sm ml-auto">
+                <a href="{% url 'seller_home' %}" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-sm transition">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span class="hidden sm:block">Dashboard</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-7xl">
+
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-primary_dark">Customer Orders</h1>
+                <p class="text-gray-500 text-sm mt-1">Manage and track the products you need to fulfill.</p>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <div class="relative">
+                    <input type="text" placeholder="Search orders..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition w-full md:w-64">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl card-shadow overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500 font-bold">
+                            <th class="px-6 py-4">Order ID</th>
+                            <th class="px-6 py-4">Product Details</th>
+                            <th class="px-6 py-4">Customer</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4">Amount</th>
+                            <th class="px-6 py-4">Date</th>
+                            <th class="px-6 py-4 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        
+                        {% for order in orders %}
+                            {% for item in order.orderitem_set.all %}
+                        <tr class="hover:bg-gray-50 transition-colors group">
+                            
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm font-bold text-primary_dark">#ORD{{ item.id }}</span>
+                            </td>
+                            
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded bg-gray-100 border border-gray-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                                        {% if item.product.productimage_set.all %}
+                                        <img src="{{ item.product.productimage_set.first.image.url }}" 
+                                            alt="{{ item.product.name }}" 
+                                            class="w-full h-full object-cover">
+                                        {% else %}
+                                        <i class="fa-regular fa-image text-gray-400"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-800 line-clamp-1">{{ item.product.name }}</p>
+                                        <p class="text-xs text-gray-500 mt-0.5">Qty: {{ item.quantity }} × ₹{{ item.price }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-blue-100 text-accent flex items-center justify-center text-[10px]">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+                                    <span class="text-sm text-gray-700 font-medium">{{ item.order.address.full_name }}</span>
+                                </div>
+                            </td>
+
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider
+                                    {% if item.order.status == 'pending' %}bg-yellow-100 text-yellow-700
+                                    {% elif item.order.status == 'processing' %}bg-blue-100 text-blue-700
+                                    {% elif item.order.status == 'shipped' %}bg-purple-100 text-purple-700
+                                    {% elif item.order.status == 'delivered' %}bg-green-100 text-green-700
+                                    {% elif item.order.status == 'cancelled' %}bg-red-100 text-red-700
+                                    {% else %}bg-gray-100 text-gray-700{% endif %}">
+                                    {{ item.order.status }}
+                                </span>
+                            </td>
+
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <p class="text-sm font-bold text-primary_dark">₹{{ item.subtotal }}</p>
+                                <p class="text-[10px] text-gray-500 uppercase mt-1">{{ item.order.payment_method }}</p>
+                            </td>
+
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <p class="text-sm text-gray-600">{{ item.order.created_at|date:"M d, Y" }}</p>
+                            </td>
+                            
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <a href="{% url 'seller_single_order' item.order.id %}" class="inline-flex items-center justify-center gap-1.5 px-4 py-1.5 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded text-sm font-semibold transition-colors">
+                                    <i class="fa-regular fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center">
+                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-50 mb-4">
+                                    <i class="fa-solid fa-box-open text-2xl text-gray-300"></i>
+                                </div>
+                                <h3 class="text-base font-bold text-gray-700">No orders yet</h3>
+                                <p class="text-sm text-gray-500 mt-1">When customers buy your products, they will appear here.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                        
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+
+    </main>
+
+    <footer class="bg-primary_dark text-white mt-auto py-6 text-sm">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-gray-400 text-xs gap-4 text-center md:text-left">
+            <p>© 2024 FlipShop Inc. Seller Services.</p>
+            <div class="flex gap-4">
+                <a href="#" class="hover:text-highlight transition">Help Center</a>
+                <a href="#" class="hover:text-highlight transition">Seller Policies</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
