@@ -61,7 +61,24 @@ class Reviews(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
-    payment_method = models.CharField(max_length=50)
+
+    PAYMENT_METHODS = (
+        ("online", "Online"),
+        ("cod", "Cash on Delivery"),
+    )
+
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
+
+    razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
+
+    PAYMENT_STATUS = (
+        ("pending", "Pending"),
+        ("paid", "Paid"),
+    )
+
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default="pending")
+
 
     STATUS_CHOICES = (
         ("pending", "Pending"),

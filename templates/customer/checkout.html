@@ -25,6 +25,12 @@
         <form method="POST" action="{% url 'place_order' %}" class="flex flex-col lg:flex-row gap-6">
             {% csrf_token %}
 
+                <input type="hidden" name="mode" value="{{ mode }}"> 
+                
+                {% if mode == "buy-now" %}
+                    <input type="hidden" name="product_id" value="{{ cart_items.0.product.id }}">
+                {% endif %}
+
             <div class="flex-1 space-y-6">
                 <!-- Review items -->
                 <div class="bg-white rounded-md shadow-sm border border-gray-200">
@@ -104,7 +110,7 @@
                             <!-- Payment mode -->
                             <div class="grid grid-cols-2 gap-2 mb-6">
                                 <label class="cursor-pointer group">
-                                    <input type="radio" name="payment_mode" value="online" class="peer hidden" disabled>
+                                    <input type="radio" name="payment_mode" value="online" class="peer hidden">
                                     <div
                                         class="py-3 border rounded-md flex flex-col items-center gap-1 text-xs
                                                transition-all peer-checked:border-primary peer-checked:bg-indigo-50/40 group-hover:border-gray-200">
@@ -136,7 +142,13 @@
                             <div class="space-y-3 border-t border-gray-100 pt-4 text-xs">
                                 <div class="flex justify-between text-gray-500">
                                     <span>Subtotal</span>
-                                    <span class="font-semibold text-pdark">₹{{subtotal}}</span>
+                                    <span class="font-semibold text-pdark">
+                                        {% if mode == "buy-now" %}
+                                            ₹{{cart_items.0.product.discount_price}}
+                                        {% else %}
+                                            ₹{{cart.grand_total}}
+                                        {% endif %}
+                                    </span>
                                 </div>
                                 <div class="flex justify-between text-gray-500">
                                     <span>Shipping</span>
@@ -144,11 +156,17 @@
                                 </div>
                                 <div class="flex justify-between items-end pt-2 border-t border-gray-100">
                                     <p class="text-xs font-semibold text-pdark">Grand Total</p>
-                                    <p class="text-xl font-bold text-primary leading-none">₹{{cart.grand_total}}</p>
+                                    <p class="text-xl font-bold text-primary leading-none">
+                                        {% if mode == "buy-now" %}
+                                            ₹{{cart_items.0.product.discount_price}}
+                                        {% else %}
+                                            ₹{{cart.grand_total}}
+                                        {% endif %}
+                                    </p>
                                 </div>
                             </div>
 
-                            <button type="submit"
+                            <button type="submit" id="orderBtn"
                                     class="w-full mt-5 bg-pdark text-white py-3 rounded-md font-semibold text-xs shadow-md
                                            hover:bg-primary hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2">
                                 Place Order Now
@@ -179,4 +197,35 @@
         </form>
     </main>
 </body>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+
+const online = document.querySelector("input[value='online']");
+const cod = document.querySelector("input[value='cod']");
+const btn = document.getElementById("orderBtn");
+const form = document.querySelector("form");
+
+// Function to update button state
+function updateButtonState() {
+    if (online.checked) {
+        btn.childNodes[0].nodeValue = "Proceed to Pay ";
+        btn.type = "submit"; // Keep it as submit so it hits your place_order view
+    } else {
+        btn.childNodes[0].nodeValue = "Place Order Now ";
+        btn.type = "submit";
+    }
+}
+
+// Listen for changes
+online.addEventListener("change", updateButtonState);
+cod.addEventListener("change", updateButtonState);
+
+// Optional: Add a loading state when clicked to prevent double-orders
+form.addEventListener("submit", () => {
+    btn.disabled = true;
+    btn.classList.add("opacity-50", "cursor-not-allowed");
+    btn.childNodes[0].nodeValue = "Processing... ";
+});
+
+</script>
 </html>
