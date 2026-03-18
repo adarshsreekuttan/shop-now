@@ -9,7 +9,7 @@ urlpatterns = [
     path('seller_home',views.seller_home,name="seller_home"),
     path('seller_profile',views.seller_profile,name="seller_profile"),
     path('seller_profile_edit',views.seller_profile_edit,name="seller_profile_edit"),
-    path('seller_password',views.seller_password,name="seller_password"),
+    path('password_reset',views.password_reset,name="password_reset"),
     path('seller_add_product',views.seller_add_product,name="seller_add_product"),
     path('seller_approval',views.seller_approval,name="seller_approval"),
     path('seller_pending_approval',views.seller_pending_approval,name='seller_pending_approval'),
@@ -21,9 +21,11 @@ urlpatterns = [
     path('seller_orders',views.seller_orders,name='seller_orders'),
     path('seller_single_order/<int:id>',views.seller_single_order,name='seller_single_order'),
     path('seller_order_status/<int:id>',views.seller_order_status,name='seller_order_status'),
+    path('pending_order',views.pending_order,name='pending_order'),
     path('pending_single/<str:slug>',views.pending_single,name='pending_single'),
     path('pending_edit/<str:slug>',views.pending_edit,name='pending_edit'),
     path('message',views.message,name='message'),
+    
 
 ]
 
