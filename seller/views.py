@@ -172,7 +172,7 @@ def seller_approval(request):
 
 @seller_required
 def seller_pending_approval(request):
-    product=Product.objects.filter(approved=False)
+    product=Product.objects.filter(status="pending")
     return render(request,"seller/seller_pending_approval.html",{'product':product})
 
 def pending_product_delete(request,id):
