@@ -38,23 +38,28 @@ def customer_login(request):
 def customer_register(request):
 
     if request.method == 'POST':
-        if request.POST.get("action") == "send_otp":
+        action = request.POST.get("action")
 
+        if action == "send_otp":
             email = request.POST.get('email')
+            if not email:
+                return JsonResponse({"status": "error", "message": "Email is required"}, status=400)
+            
             secret = pyotp.random_base32()
             request.session['otp_secret'] = secret
             request.session['email'] = email
-
             request.session['otp_sent'] = True
 
             totp = pyotp.TOTP(secret)
             otp = totp.now()
 
-            send_mail("Email verification", f"Your OTP is {otp}","blackasta0999@gmail.com", [email], fail_silently=False)
-
-            return render(request,'customer/register.html', {"message":"OTP sent succesfullt"})
+            try:
+                send_mail("Email verification", f"Your OTP is {otp}","blackasta0999@gmail.com", [email], fail_silently=False)
+                return JsonResponse({"status": "success", "message": "OTP sent successfully!"})
+            except Exception as e:
+                return JsonResponse({"status": "error", "message": "Failed to send email."}, status=500)
         
-        if request.POST.get("action") == "register":
+        if action == "register":
 
             otp = request.POST.get('otp')
             secret = request.session.get("otp_secret")
@@ -644,3 +649,6 @@ def payment_success(request):
     order.save()
     
     return redirect('order_success', id=order.id)
+
+def password_reset(request):
+    return render(request, 'customer/password_reset_customer.html')

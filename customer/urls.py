@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from customer import views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('login/',views.customer_login, name='customer_login'),
@@ -49,4 +50,11 @@ urlpatterns = [
 
     path('payment-gateway/<int:order_id>/', views.payment_gateway, name='payment_gateway'),
     path('payment-success/', views.payment_success, name='payment_success'),
+
+    
+
+    path('reset_password/', auth_views.PasswordResetView.as_view(template_name="customer/password_reset.html"), name="reset_password"),
+    path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(template_name="customer/registration/password_reset_done.html"), name="password_reset_done"),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="customer/registration/password_reset_confirm.html"), name="password_reset_confirm"),
+    path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(template_name="customer/registration/password_reset_complete.html"), name="password_reset_complete"),
 ]
