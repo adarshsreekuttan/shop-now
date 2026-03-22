@@ -9,6 +9,8 @@ from core.models import User, Product
 from customer.models import Order
 from .decorators import seller_required
 from django.http import JsonResponse
+from custom_admin.models import Coupon
+
 
 
 # Create your views here.
@@ -358,4 +360,11 @@ def pending_edit(request,slug):
 
 def message(request):
     return render(request,'seller/message.html')
+
+def add_coupon(request):
+    seller=SellerProfile.objects.get(user=request.user)
+    if request.method=='POST':
+        coupon=Coupon.objects.get(seller=seller)
+        coupon.code=request.POST.get('code')
+    return render(request,'seller/add_coupon.html')
     
