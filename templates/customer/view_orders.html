@@ -30,13 +30,16 @@
     <div class="flex flex-col gap-0">
         {% include 'customer/navbar.html' %}
         {% include 'customer/profile_navbar.html' %}
+        <div class="max-w-5xl mx-auto px-4 mt-4">
+            {% include 'customer/order_status_navbar.html' %}
+        </div>
     </div>
 
     <main class="max-w-5xl mx-auto px-4 py-12">
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-pdark tracking-tight">Purchase History</h1>
-                <p class="text-gray-500 mt-2 text-base">Check the status of recent orders and manage returns.</p>
+                <h1 class="text-3xl font-bold text-pdark tracking-tight">My Orders</h1>
+                <p class="text-gray-500 mt-2 text-base">Check your all orders status</p>
             </div>
             <div class="flex gap-2">
                 <span class="text-xs font-medium text-gray-400 bg-white px-3 py-1 rounded-full border border-gray-200">
@@ -128,7 +131,7 @@
                             </span>
                         </div>
                         
-                        <div class="flex gap-4">
+                        <!-- <div class="flex gap-4">
                             {% if order.status == 'delivered' %}
                             <button class="text-sm font-bold text-primary hover:text-pdark flex items-center gap-1 transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
@@ -138,7 +141,7 @@
                             <button class="text-sm font-bold text-gray-400 hover:text-pdark transition-colors">
                                 Reorder
                             </button>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>

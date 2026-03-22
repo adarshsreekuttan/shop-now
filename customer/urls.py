@@ -1,13 +1,14 @@
 from django.contrib import admin
 from django.urls import path
 from customer import views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('login/',views.customer_login, name='customer_login'),
     path('register/',views.customer_register, name='customer_register'),
     path('logout', views.customer_logout, name='customer_logout'),
 
-    path('home/',views.home_view, name='home'),
+    path('',views.home_view, name='home'),
     path('more-product/<str:slug>/',views.single_product_view, name='single_product'),
 
     path('profile/', views.profile_page, name='profile_page'),
@@ -40,11 +41,20 @@ urlpatterns = [
 
     path('category/<str:slug>', views.category_filter, name='category_detail'),
     path('subcategory/<slug:slug>/<slug:sub_slug>', views.subcategory_filter, name='subcategory_filter'),
+    path('load-subcategories/', views.load_subcategories, name='load_subcategories'),
 
     path('search', views.search_products, name='search_products'),
+    path('search-suggestions/', views.search_suggestions, name='search_suggestions'),
 
     path('buy-now/<int:id>', views.buy_now, name='buy_now'),
 
     path('payment-gateway/<int:order_id>/', views.payment_gateway, name='payment_gateway'),
     path('payment-success/', views.payment_success, name='payment_success'),
+
+    
+
+    path('reset_password/', auth_views.PasswordResetView.as_view(template_name="customer/password_reset.html"), name="reset_password"),
+    path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(template_name="customer/registration/password_reset_done.html"), name="password_reset_done"),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="customer/registration/password_reset_confirm.html"), name="password_reset_confirm"),
+    path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(template_name="customer/registration/password_reset_complete.html"), name="password_reset_complete"),
 ]

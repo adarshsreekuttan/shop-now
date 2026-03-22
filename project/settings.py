@@ -155,13 +155,14 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'blackasta0999@gmail.com'
 EMAIL_HOST_PASSWORD = 'iajc xqnm wpmf qwlk'
 
+DEFAULT_FROM_EMAIL = 'Shop Now <blackasta0999@gmail.com>'
+SERVER_EMAIL = 'blackasta0999@gmail.com'
+
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
-
-
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
