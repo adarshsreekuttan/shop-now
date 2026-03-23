@@ -107,7 +107,8 @@ def seller_profile_edit(request):
         sellerprofile.gst_number=request.POST.get('gst_number') 
         sellerprofile.save()
         return redirect('seller_profile')
-    return render(request,"seller/seller_profile_edit.html",{'seller':sellerprofile})   
+    return render(request,"seller/seller_profile_edit.html",{'seller':sellerprofile}) 
+  
 @seller_required
 def password_reset(request):
     seller=request.user
@@ -129,6 +130,7 @@ def password_reset(request):
         return redirect('seller_profile')                                 
     return render(request,'seller/password_reset.html',{'seller':sellerprofile})
 
+@seller_required
 def product_control(request):
     return render(request,'seller/product_control.html')
 
