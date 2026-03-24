@@ -117,6 +117,10 @@ def home_view(request):
 
         product.primary_image = primary
 
+        is_in_wishlist = False
+
+        wishlist = WishList.objects.filter(user=request.user)
+
         avg_rating = Reviews.objects.filter(product=product)\
         .aggregate(Avg('rating'))['rating__avg'] or 0
         product.avg_rating = int(round(avg_rating))
