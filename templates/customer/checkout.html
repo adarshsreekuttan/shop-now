@@ -22,6 +22,13 @@
     {% include 'customer/navbar.html' %}
 
     <main class="max-w-6xl mx-auto px-4 py-8">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="bg-red-100 text-red-700 px-4 py-2 rounded mb-2">
+                {{ message }}
+                </div>
+            {% endfor %}
+            {% endif %}
         <form method="POST" action="{% url 'place_order' %}" class="flex flex-col lg:flex-row gap-6">
             {% csrf_token %}
 

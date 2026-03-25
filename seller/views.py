@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth import login,authenticate,logout
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import get_user_model,update_session_auth_hash
-from .models import SellerProfile,SubCategory,Category,ProductImage,ProductVarient,AttributeValues,VariantImage,Attribute
+from .models import SellerProfile,SubCategory,Category,ProductImage
 from django.contrib import messages
 from django.utils.text import slugify
 from core.models import User, Product

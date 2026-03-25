@@ -124,9 +124,23 @@
                 </span>
               </div>
 
-              <div class="mt-1 text-[11px] sm:text-xs text-green-600 font-medium">
-                85% off · Limited stock
-              </div>
+              <div class="mt-1 text-[11px] sm:text-xs font-medium
+                {% if product.stock == 0 %}
+                    text-red-600
+                {% elif product.stock < 10 %}
+                    text-orange-500 
+                {% else %}
+                    text-green-600
+                {% endif %}
+                 ">
+                {% if product.stock == 0 %}
+                    Out of stock
+                {% elif product.stock < 10 %}
+                    Limited stock
+                {% else %}
+                    Best deal
+                {% endif %}
+            </div>
             </div>
 
             <div class="mt-3 flex items-center gap-1">
