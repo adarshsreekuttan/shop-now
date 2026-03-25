@@ -112,6 +112,7 @@ def home_view(request):
     page_number = request.GET.get('page')
     products = paginator.get_page(page_number)
 
+
     for product in products:
         primary = product.productimage_set.filter(is_primary=True).first()
         if not primary:
