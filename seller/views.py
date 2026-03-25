@@ -10,6 +10,7 @@ from customer.models import Order
 from .decorators import seller_required
 from django.http import JsonResponse
 from custom_admin.models import Coupon
+from django.core.paginator import Paginator
 
 
 
@@ -130,14 +131,7 @@ def password_reset(request):
         return redirect('seller_profile')                                 
     return render(request,'seller/password_reset.html',{'seller':sellerprofile})
 
-@seller_required
-def product_control(request):
-    return render(request,'seller/product_control.html')
 
-def inventory(request):
-    seller=SellerProfile.objects.get(user=request.user)
-    products=Product.objects.filter(seller=seller,status='approved')
-    return render(request,'seller/inventory.html',{'products':products})
 
 @seller_required
 def seller_add_product(request):
@@ -154,7 +148,7 @@ def seller_add_product(request):
         product.stock=request.POST.get('stock')
         sub_category_slug=request.POST.get('sub_category')        
         product.sub_category=get_object_or_404(SubCategory, slug=sub_category_slug)      
-        category_slug=request.POST.get('category') 
+        category_slug=request.POST.get('category')
         product.category=get_object_or_404(Category, slug=category_slug)      
         base_slug=slugify(product.name)
     
@@ -177,10 +171,47 @@ def seller_add_product(request):
         return redirect('seller_approval')        
     return render(request,"seller/seller_add_product.html",{'category':category,'subcategory':subcategory})
 
+def primary_img(request,id):
+    image=ProductImage.objects.get(id=id)
+    if request.method=="POST":
+        ProductImage.objects.filter(product=image.product).update(is_primary=False)       
+        image.is_primary=True
+        image.save()
+    return redirect('seller_product_edit',slug=image.product.slug)
+
+@seller_required
+def load_subcategory(request):
+    category_slug=request.GET.get('category_slug')
+    subcategories=SubCategory.objects.filter(category__slug=category_slug).values('slug','name')
+    return JsonResponse(list(subcategories),safe=False)
 
 @seller_required
 def seller_approval(request):
     return render(request,'seller/seller_approval.html')
+
+def reject_product(request):
+    product=Product.objects.filter(status='rejected')
+    return render(request,'seller/reject_product.html',{'product':product})
+
+@seller_required
+def product_control(request):
+    return render(request,'seller/product_control.html')
+
+def inventory(request):
+    seller=SellerProfile.objects.get(user=request.user)
+    all_products=Product.objects.filter(seller=seller,status='approved')
+    paginator=Paginator(all_products,15)
+    page_no=request.GET.get('page')
+    products=paginator.get_page(page_no)
+    
+    for product in products:
+        primary=product.productimages_set.filter(is_primary=True).first()
+        if not primary:
+            primary=product.productimage_set.first()
+        product.primary_image=primary 
+         
+    
+    return render(request,'seller/inventory.html',{'products':products})
 
 @seller_required
 def seller_pending_approval(request):
@@ -245,12 +276,6 @@ def product_delete(request,id):
 @seller_required
 def seller_password(request):                       
     return render(request,'seller/seller_password.html')
-
-@seller_required
-def load_subcategory(request):
-    category_slug=request.GET.get('category_slug')
-    subcategories=SubCategory.objects.filter(category__slug=category_slug).values('slug','name')
-    return JsonResponse(list(subcategories),safe=False)
 
 @seller_required
 def seller_orders(request):

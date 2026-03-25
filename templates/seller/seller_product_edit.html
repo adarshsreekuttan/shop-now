@@ -7,6 +7,8 @@
     <title>FlipShop - Edit Product</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{% static 'js/category_subcategory.js' %}"></script>
+
     
     <script>
         tailwind.config = {
@@ -155,10 +157,12 @@
                             <div>
                                 <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Category <span class="text-red-500">*</span></label>
                                 <div class="relative">
-                                    <select name="category" required class="w-full border border-gray-300 rounded-md p-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors appearance-none bg-white">
+                                    <select name="category" id="category" required class="w-full border border-gray-300 rounded-md p-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors appearance-none bg-white">
                                         <option value="" disabled>Select Category</option>
-                                        {% for c in categories %}
-                                        <option value="{{ c.id }}" {% if c.id == product.category.id %} selected {% endif %}>{{ c.name }}</option>
+                                        {% for c in subcategory.category %}
+                                            <option value="{{ c.slug }}" {% if c.slug == product.category.slug %}selected{% endif %}>
+                                                {{ c.name }}
+                                            </option>
                                         {% endfor %}
                                     </select>
                                     <i class="fa-solid fa-angle-down absolute right-4 top-3.5 text-gray-400 pointer-events-none"></i>
@@ -168,10 +172,12 @@
                             <div>
                                 <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Sub Category <span class="text-red-500">*</span></label>
                                 <div class="relative">
-                                    <select name="sub_category" required class="w-full border border-gray-300 rounded-md p-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors appearance-none bg-white">
+                                    <select name="sub_category" id="sub_category" required class="w-full border border-gray-300 rounded-md p-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors appearance-none bg-white">
                                         <option value="" disabled>Select Sub Category</option>
                                         {% for x in subcategory %}
-                                        <option value="{{ x.id }}" {% if x.id == product.sub_category.id %} selected {% endif %}>{{ x.name }}</option>
+                                            <option value="{{ x.slug }}" {% if x.slug == product.sub_category.slug %}selected{% endif %}>
+                                                {{ x.name }}
+                                            </option>
                                         {% endfor %}
                                     </select>
                                     <i class="fa-solid fa-angle-down absolute right-4 top-3.5 text-gray-400 pointer-events-none"></i>

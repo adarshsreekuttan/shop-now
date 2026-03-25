@@ -7,8 +7,6 @@
     <title>FlipShop - Add New Product</title>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="{% static 'js/category_subcategory.js' %}"></script>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
@@ -68,7 +66,7 @@
             </div>
         </div>
 
-        <form action="#" method="POST" enctype="multipart/form-data" class="bg-white rounded-xl card-shadow overflow-hidden" onsubmit="this.querySelector('button[type=submit]').disabled = true;">
+        <form action="" method="POST" enctype="multipart/form-data" class="bg-white rounded-xl card-shadow overflow-hidden" onsubmit="this.querySelector('button[type=submit]').disabled = true;">
             {% csrf_token %}
             
             <input type="hidden" name="main_image_index" id="main-image-index" value="0">
@@ -147,7 +145,7 @@
                                     <select name="sub_category" id="subcategory" required class="w-full border border-gray-300 rounded-md p-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors appearance-none bg-white">
                                         <option value="" disabled selected> Select Sub Category</option>
                                         {% for x in subcategory %}
-                                        <option value="{{ x.slug }}">{{ x.name }}</option>
+                                        <option value="{{ x.slug }}" data-category="{{ x.category.slug }}">{{ x.name }}</option>
                                         {% endfor %}
                                     </select>
                                     <i class="fa-solid fa-angle-down absolute right-4 top-3.5 text-gray-400 pointer-events-none"></i>
@@ -223,6 +221,33 @@
     </footer>
 
     <script>
+        // --- CATEGORY & SUBCATEGORY FILTERING LOGIC ---
+        $(document).ready(function() {
+            // Clone all subcategory options (except the first placeholder option)
+            var allSubcategories = $('#subcategory option:not(:first)').clone();
+            
+            // Clear the subcategory dropdown initially
+            $('#subcategory').empty().append('<option value="" disabled selected> Select Sub Category</option>');
+
+            // Listen for changes on the main Category dropdown
+            $('#category').change(function() {
+                var selectedCategory = $(this).val();
+                var $subcategorySelect = $('#subcategory');
+                
+                // Reset the subcategory dropdown
+                $subcategorySelect.empty().append('<option value="" disabled selected> Select Sub Category</option>');
+                
+                if (selectedCategory) {
+                    // Filter the cloned options for ones matching the selected category
+                    var filteredOptions = allSubcategories.filter('[data-category="' + selectedCategory + '"]');
+                    
+                    // Append the matching options to the dropdown
+                    $subcategorySelect.append(filteredOptions);
+                }
+            });
+        });
+
+        // --- IMAGE UPLOAD LOGIC ---
         document.addEventListener('DOMContentLoaded', function() {
             const imageUpload = document.getElementById('image-upload');
             const dropZone = document.getElementById('drop-zone');
@@ -350,6 +375,5 @@
             }
         });
     </script>
-
 </body>
 </html>
