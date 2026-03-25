@@ -9,6 +9,8 @@ from .models import Address, Cart, CartItem, WishList, Reviews, Order, OrderItem
 from .decorators import customer_required
 from django.http import JsonResponse
 
+from django.contrib import messages
+
 from django.core.paginator import Paginator
 
 import pyotp
@@ -104,7 +106,7 @@ def customer_register(request):
 def home_view(request):
     
     all_products = Product.objects.filter(status = "approved")
-    category = Category.objects.filter()
+    category = Category.objects.all()
 
     paginator = Paginator(all_products, 15)
     page_number = request.GET.get('page')
@@ -117,14 +119,21 @@ def home_view(request):
 
         product.primary_image = primary
 
+        product.is_in_wishlist = False
+
+        wishlist = WishList.objects.filter(user=request.user, product=product)
+        if wishlist:
+            product.is_in_wishlist = True
+            
+
         avg_rating = Reviews.objects.filter(product=product)\
         .aggregate(Avg('rating'))['rating__avg'] or 0
-        product.avg_rating = avg_rating
+        product.avg_rating = int(round(avg_rating))
 
         number_of_reviews = Reviews.objects.filter(product=product).count()
-        product.number_of_reviews = number_of_reviews
+        product.number_of_reviews = number_of_reviews   
         
-    return render(request, 'customer/home.html', {"products":products, "categories":category, "avg_rating":avg_rating, "number_of_reviews":number_of_reviews})
+    return render(request, 'customer/home.html', {"products":products, "categories":category})
     
 def load_subcategories(request):
     category_slug = request.GET.get('category')
@@ -180,6 +189,13 @@ def search_products(request):
             primary = product.productimage_set.first()
         product.primary_image = primary
 
+        avg_rating = Reviews.objects.filter(product=product)\
+        .aggregate(Avg('rating'))['rating__avg'] or 0
+        product.avg_rating = int(round(avg_rating))
+
+        number_of_reviews = Reviews.objects.filter(product=product).count()
+        product.number_of_reviews = number_of_reviews  
+
     return render(request, 'customer/search_results.html', 
                   {"products":result_products, 
                    "search_keyword":search_keyword,
@@ -202,6 +218,20 @@ def category_filter(request, slug):
     page_number = request.GET.get('page')
     products = paginator.get_page(page_number)
 
+    for product in products:
+
+        primary = product.productimage_set.filter(is_primary=True).first()
+        if not primary:
+            primary = product.productimage_set.first()
+        product.primary_image = primary
+
+        avg_rating = Reviews.objects.filter(product=product)\
+        .aggregate(Avg('rating'))['rating__avg'] or 0
+        product.avg_rating = int(round(avg_rating))
+
+        number_of_reviews = Reviews.objects.filter(product=product).count()
+        product.number_of_reviews = number_of_reviews
+
     return render(request, 'customer/product_category_filter.html', {
         "products":products,
         "subcategories":subcategories,
@@ -218,7 +248,21 @@ def subcategory_filter(request, slug, sub_slug):
 
     paginator = Paginator(all_products, 15)
     page_number = request.GET.get('page')
-    products = paginator.get_page(page_number)  
+    products = paginator.get_page(page_number)
+
+    for product in products:
+
+        primary = product.productimage_set.filter(is_primary=True).first()
+        if not primary:
+            primary = product.productimage_set.first()
+        product.primary_image = primary
+        
+        avg_rating = Reviews.objects.filter(product=product)\
+        .aggregate(Avg('rating'))['rating__avg'] or 0
+        product.avg_rating = int(round(avg_rating))
+
+        number_of_reviews = Reviews.objects.filter(product=product).count()
+        product.number_of_reviews = number_of_reviews  
 
     return render(request, 'customer/product_category_filter.html', {
         "category":category,
@@ -245,6 +289,20 @@ def single_product_view(request, slug):
         is_in_wishlist = WishList.objects.filter(user=request.user, product=product).exists()
 
     related_products = Product.objects.filter(category=category).exclude(slug=slug)[:5]
+
+    for related_product in related_products:
+
+        primary = related_product.productimage_set.filter(is_primary=True).first()
+        if not primary:
+            primary = related_product.productimage_set.first()
+        related_product.primary_image = primary
+        
+        avg_rating = Reviews.objects.filter(product=product)\
+        .aggregate(Avg('rating'))['rating__avg'] or 0
+        related_product.avg_rating = int(round(avg_rating))
+
+        number_of_reviews = Reviews.objects.filter(product=product).count()
+        related_product.number_of_reviews = number_of_reviews
 
     return render(request, 'customer/single_product_view.html', 
                   {"product" : product, 
@@ -525,6 +583,23 @@ def place_order(request):
         payment_method = request.POST.get('payment_mode')
         mode = request.POST.get('mode')
 
+        if mode == 'buy-now':
+            product_id = request.POST.get('product_id')
+            product = get_object_or_404(Product, id=product_id)
+
+            if product.stock < 1:
+                messages.error(request, f"{product.name} is out of stock")
+                return redirect('checkout_page')
+
+        else:
+            cart = get_object_or_404(Cart, user=user)
+            cart_items = CartItem.objects.filter(cart=cart)
+
+            for item in cart_items:
+                if item.product.stock < item.quantity:
+                    messages.error(request, f"{item.product.name} is out of stock")
+                    return redirect('checkout_page')
+
         with transaction.atomic():
             order = Order.objects.create(
                 user=user,
@@ -533,30 +608,34 @@ def place_order(request):
             )
 
             if mode == 'buy-now':
-                product_id = request.POST.get('product_id')
-                product = get_object_or_404(Product, id=product_id)
                 OrderItem.objects.create(
                     order=order,
                     product=product,
                     quantity=1,
                     price=product.discount_price
                 )
+
+                product.stock -= 1
+                product.save()
+
             else:
-                cart = get_object_or_404(Cart, user=user)
-                cart_items = CartItem.objects.filter(cart=cart)
-                
-                for cart_item in cart_items:
+                for item in cart_items:
                     OrderItem.objects.create(
                         order=order,
-                        product=cart_item.product,
-                        quantity=cart_item.quantity,
-                        price=cart_item.price 
+                        product=item.product,
+                        quantity=item.quantity,
+                        price=item.price
                     )
-                
+
+                    product = item.product
+                    product.stock -= item.quantity
+                    product.save()
+
                 cart_items.delete()
 
         if payment_method == 'cod':
             order.payment_status = "pending"
+            order.save()
             return redirect('order_success', id=order.id)
         else:
             return redirect('payment_gateway', order_id=order.id)
