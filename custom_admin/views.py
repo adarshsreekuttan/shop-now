@@ -65,4 +65,31 @@ def user_view(request):
     return render(request,'admin/userview.html',{'users':users})
 
 
+def add_category(request):
+    if request.method == 'POST':
+        name = request.POST.get('name') 
+        description = request.POST.get('description')
+        image = request.FILES.get('image')
+
+        Category.objects.create(
+
+            name = name,
+            description = description,
+            image = image
+
+        )  
+
+        return redirect('category_list')
     
+    return render(request,'admin/add_category.html') 
+
+
+def category_list(request):
+    categories = Category.objects.filter(is_active=True)
+    return render(request,'admin/category_list.html',{'categories':categories})
+
+
+def delete_category(request,id):
+    categories = Category.objects.get(id=id)
+    categories.delete()
+    return redirect('category_list')    
