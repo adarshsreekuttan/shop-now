@@ -17,6 +17,10 @@ from django.core.paginator import Paginator
 # Create your views here.
 User = get_user_model()
 
+def testing(request):
+    product=Product.objects.filter(status='approved')
+    return render(request,'seller/testing.html',{'product':product})
+
 def seller_registration(request):
     if request.method=='POST':
         email=request.POST.get('email')
@@ -82,13 +86,7 @@ def seller_logout(request):
 def seller_home(request):
     seller=request.user
     sellerprofile=seller.seller_profile
-    products=Product.objects.filter(seller=sellerprofile,status='approved')
-    
-    for product in products:
-        primary=product.productimage_set.filter(is_primary=True).first()
-        if not primary:
-            primary=product.productimage_set.first()
-        product.primary_image=primary    
+    products=Product.objects.filter(seller=sellerprofile,status='approved')    
     return render(request, "seller/seller_home.html",{'sellerprofile':sellerprofile,'product':products})  
 
 @seller_required
@@ -168,22 +166,35 @@ def seller_add_product(request):
         
         product.slug= slug
         product.save()
-        images=request.FILES.getlist('product_image')
+        images=request.FILES.getlist('product_images')
         for img in images:
             ProductImage.objects.create(
                 product=product,
                 image=img
-            )              
+            ) 
+        first=product.productimage_set.first()
+        if first:
+            first.is_primary=True
+            first.save()
+        
+                         
         return redirect('seller_approval')        
     return render(request,"seller/seller_add_product.html",{'category':category,'subcategory':subcategory})
 
-def primary_img(request,id):
+def set_primary_img(request,id):
     image=ProductImage.objects.get(id=id)
     if request.method=="POST":
         ProductImage.objects.filter(product=image.product).update(is_primary=False)       
         image.is_primary=True
         image.save()
-    return redirect('seller_product_edit',slug=image.product.slug)
+        
+        product=image.product
+        if product.status=="pending":
+            return redirect('pending_edit',slug=image.product.slug)
+        if product.status=="approved":
+            return redirect('seller_product_edit',slug=image.product.slug)
+        if product.status=="rejected":
+            return redirect("reject_product_edit",slug=image.product.slug)
 
 @seller_required
 def load_subcategory(request):
@@ -200,6 +211,41 @@ def reject_product(request):
     return render(request,'seller/reject_product.html',{'product':product})
 
 @seller_required
+def reject_product_edit(request,slug):
+    
+    product=Product.objects.get(slug=slug,status="rejected")
+    subcategory=SubCategory.objects.all()
+    if request.method=="POST":
+        name=request.POST.get('product_name')
+        product.name=name
+        product.price=request.POST.get('product_price')
+        product.discount_price=request.POST.get('discount_price')
+        product.description=request.POST.get('description')
+        product.stock=request.POST.get('stock')
+        product.category=Category.objects.get(slug=request.POST.get('category'))        
+        product.sub_category=SubCategory.objects.get(slug=request.POST.get('sub_category'))        
+        
+        base_slug=slugify(name)
+        new_slug=base_slug
+        count=1  
+        while Product.objects.filter(slug=new_slug).exclude(id=product.id).exists():
+                new_slug=f"{base_slug}-{count}"
+                count+=1        
+        product.slug= new_slug
+        product.status="pending"
+        product.save()
+        images=request.FILES.getlist('product_image')
+        if images:
+            ProductImage.objects.filter(product=product).delete()
+            for img in images:
+                ProductImage.objects.create(
+                    product=product,
+                    image=img
+                )        
+        return redirect('seller_approval')        
+    return render(request,"seller/reject_product_edit.html",{'product':product,'subcategory':subcategory})
+
+@seller_required
 def product_control(request):
     return render(request,'seller/product_control.html')
 
@@ -209,14 +255,6 @@ def inventory(request):
     paginator=Paginator(all_products,15)
     page_no=request.GET.get('page')
     products=paginator.get_page(page_no)
-    
-    for product in products:
-        primary=product.productimage_set.filter(is_primary=True).first()
-        if not primary:
-            primary=product.productimage_set.first()
-        product.primary_image=primary 
-         
-    
     return render(request,'seller/inventory.html',{'products':products})
 
 @seller_required
@@ -240,6 +278,7 @@ def seller_product_view(request,slug):
 @seller_required
 def seller_product_edit(request,slug):
     product=Product.objects.get(slug=slug,status='approved')
+    category=Category.objects.all()
     subcategory=SubCategory.objects.all()
     if request.method=="POST":
         name=request.POST.get('product_name')
@@ -270,8 +309,8 @@ def seller_product_edit(request,slug):
                     product=product,
                     image=img
                 )        
-        return redirect('seller_product_view',slug=product.slug)        
-    return render(request,"seller/seller_product_edit.html",{'product':product,'subcategory':subcategory})
+        return redirect('seller_pending_approval')        
+    return render(request,"seller/seller_product_edit.html",{'product':product,'category':category,'subcategory':subcategory})
 
 @seller_required
 def product_delete(request,id):
@@ -322,6 +361,7 @@ def pending_single(request,slug):
 
 @seller_required
 def pending_edit(request,slug):
+    
     product=Product.objects.get(slug=slug,status="pending")
     subcategory=SubCategory.objects.all()
     if request.method=="POST":
@@ -331,7 +371,8 @@ def pending_edit(request,slug):
         product.discount_price=request.POST.get('discount_price')
         product.description=request.POST.get('description')
         product.stock=request.POST.get('stock')
-        product.sub_category=SubCategory.objects.get(id=request.POST.get('sub_category'))        
+        product.category=Category.objects.get(slug=request.POST.get('category'))        
+        product.sub_category=SubCategory.objects.get(slug=request.POST.get('sub_category'))        
         
         base_slug=slugify(name)
         new_slug=base_slug

@@ -66,3 +66,7 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_primary_image(self):
+        primary=self.productimage_set.filter(is_primary=True).first()        
+        return primary or self.productimage_set.first()
