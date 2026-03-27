@@ -30,6 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -146,7 +147,7 @@ AUTHENTICATION_BACKENDS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-LOGIN_URL = '/customer/login/'
+LOGIN_URL = 'customer_login'
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
