@@ -36,6 +36,7 @@
 </head>
 <body class="bg-[#f8fafc] text-slate-900 antialiased font-sans flex min-h-screen">
 
+<<<<<<< HEAD
     {% include 'admin/admin_navbar.html' %}
 
         <div class="mt-auto p-8 border-t border-slate-100">
@@ -62,15 +63,41 @@
                     <h1 class="text-3xl font-black tracking-tight text-slate-900">Order Logs</h1>
                     <p class="text-slate-500 font-medium mt-1">Monitor transactions and shipment logistics.</p>
                 </div>
+=======
+    <aside class="w-64 bg-white border-r border-slate-200 sticky top-0 h-screen overflow-y-auto z-50">
+        {% include 'admin/admin_navbar.html' %}
+    </aside>
+
+    <main class="flex-1">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-10">
+            
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-10 gap-6">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-200">
+                        <i class="fas fa-truck-fast text-indigo-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-black tracking-tight text-slate-900">Order Logs</h1>
+                        <p class="text-slate-500 font-medium">Monitor transactions and shipment logistics.</p>
+                    </div>
+                </div>
+>>>>>>> 369321acb28f3d27148b83e2f8e7318b40f98585
 
                 <div class="flex items-center space-x-3">
                     <div class="relative">
                         <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                         <input type="text" placeholder="Search Order ID..." 
+<<<<<<< HEAD
                                class="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none w-64 shadow-sm transition-all">
                     </div>
                     <button class="bg-white text-slate-700 border border-slate-200 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-50 transition shadow-sm">
                         <i class="fas fa-filter mr-2"></i> Filter
+=======
+                               class="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none w-64 shadow-sm">
+                    </div>
+                    <button class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">
+                        Filter
+>>>>>>> 369321acb28f3d27148b83e2f8e7318b40f98585
                     </button>
                 </div>
             </div>
