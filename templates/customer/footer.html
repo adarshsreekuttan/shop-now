@@ -10,13 +10,19 @@
         <p class="text-gray-300 text-sm leading-relaxed">
           Your destination for tech, fashion, and lifestyle essentials — curated with quality in mind.
         </p>
+        <a href="{% url 'seller_registration' %}"
+          class="inline-block border border-highlight text-highlight hover:bg-highlight hover:text-pdark px-4 py-2 my-6 rounded-md text-xs font-bold uppercase tracking-wider transition-all">
+          Become a Seller
+        </a>
       </div>
+
+      
 
       <div>
         <h4 class="font-semibold mb-3 text-highlight text-sm tracking-wide uppercase">Quick Links</h4>
         <ul class="space-y-2 text-sm text-gray-300">
-          <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
-          <li><a href="#" class="hover:text-white transition-colors">Categories</a></li>
+          <li><a href=" " class="hover:text-white transition-colors">About Us</a></li>
+          <li><a href="{% url 'home' %}#categories-section" class="hover:text-white transition-colors">Categories</a></li>
           <li><a href="#" class="hover:text-white transition-colors">New Arrivals</a></li>
           <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
         </ul>
