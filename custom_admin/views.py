@@ -162,3 +162,39 @@ def delete_subcategory(request,id):
     subcategories = SubCategory.objects.get(id=id)
     subcategories.delete()
     return redirect('subcategory_list')
+
+
+def edit_product(request,id):
+    products = Product.objects.get(id=id)
+    category = Category.objects.all()
+    subcategory = SubCategory.objects.all()
+    seller = SellerProfile.objects.all()
+
+    if request.method  == 'POST':
+
+        products.seller_id = request.POST.get('seller')
+        products.name = request.POST.get('name')
+        products.price = request.POST.get('price')
+        products.discount_price = request.POST.get('discount_price')
+        products.status = True
+        products.description = request.POST.get('description')
+        products.stock = request.POST.get('stock')
+        products.category_id = request.POST.get('category')
+        products.sub_category_id = request.POST.get('subcategory')
+        products.save()
+
+        return redirect('product_view')
+
+    return render(request,'admin/edit_product.html',{'products':products, 'category':category, 'subcategory':subcategory, 'seller':seller})   
+
+
+def delete_product(request,id):
+    products = Product.objects.get(id=id)
+    products.delete()
+    return redirect('product_view')
+
+
+def deactivate_user(request,id):
+    user = User.objects.get(id=id)
+    user.is_active = False
+    return redirect('user_view')
