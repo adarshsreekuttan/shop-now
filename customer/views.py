@@ -114,6 +114,8 @@ def home_view(request):
 
     is_authenticated = request.user.is_authenticated
 
+    trending_products = Product.objects.order_by('?').annotate(avg_rating=Avg('reviews__rating'))[:3]
+
 
     for product in products:
         primary = product.productimage_set.filter(is_primary=True).first()
@@ -138,7 +140,10 @@ def home_view(request):
         number_of_reviews = Reviews.objects.filter(product=product).count()
         product.number_of_reviews = number_of_reviews   
         
-    return render(request, 'customer/home.html', {"products":products, "categories":category, "is_authenticated":is_authenticated})
+    return render(request, 'customer/home.html', {"products":products, 
+                                                  "categories":category, 
+                                                  "is_authenticated":is_authenticated,
+                                                  "trending_products":trending_products})
     
 def load_subcategories(request):
     category_slug = request.GET.get('category')
