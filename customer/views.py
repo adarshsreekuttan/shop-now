@@ -105,7 +105,7 @@ def customer_register(request):
 
 def home_view(request):
     
-    all_products = Product.objects.filter(status = "approved")
+    all_products = Product.objects.filter(status = "approved").order_by("-created_at")
     category = Category.objects.all()
 
     paginator = Paginator(all_products, 15)
