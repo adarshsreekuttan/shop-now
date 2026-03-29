@@ -107,16 +107,19 @@
                                     {% endif %}
                                 </td>
                                 <td class="px-6 py-5 whitespace-nowrap text-right">
-                                    <div class="flex justify-end space-x-2">
-                                        <a href="#" class="p-2 text-slate-400 hover:text-indigo-600 transition-colors" title="View Profile">
-                                            <i class="fas fa-external-link-alt text-xs"></i>
-                                        </a>
-                                        <button class="p-2 text-slate-400 hover:text-rose-600 transition-colors" title="Ban Seller">
-                                            <i class="fas fa-user-slash text-xs"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+    <div class="flex justify-end space-x-2">
+        <a href="{% url 'seller_details' seller.id %}" 
+           class="p-2 text-slate-400 hover:text-indigo-600 transition-colors" 
+           title="View Profile">
+            <i class="fas fa-external-link-alt text-xs"></i>
+        </a>
+        </form>
+        <button class="p-2 text-slate-400 hover:text-rose-600 transition-colors" 
+            title="Ban Seller">
+            <i class="fas fa-user-slash text-xs"></i>
+        </button>
+    </div>
+</td>
                             {% empty %}
                             <tr>
                                 <td colspan="6" class="px-6 py-24 text-center">

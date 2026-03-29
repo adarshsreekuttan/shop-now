@@ -198,3 +198,26 @@ def deactivate_user(request,id):
     user = User.objects.get(id=id)
     user.is_active = False
     return redirect('user_view')
+
+
+def order_details(request,id):
+    orders = Order.objects.get(id=id)
+    order_items = OrderItem.objects.all()
+    return render(request,'admin/order_details.html',{'orders':orders, 'order_items':order_items})
+
+
+def delete_order(request,id):
+    orders = Order.objects.get(id=id)
+    orders.delete
+    return redirect('order_view')
+
+
+def seller_details(request,id):
+    sellers = SellerProfile.objects.get(id=id)
+    return render(request,'admin/seller_details.html',{'sellers':sellers}) 
+
+
+def deactivate_seller(request,id):
+    sellers = SellerProfile.objects.get(id=id)
+    sellers.is_active = False
+    return redirect('seller_view')
