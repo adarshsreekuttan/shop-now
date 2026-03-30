@@ -182,8 +182,8 @@ def seller_add_product(request):
             if name and value:
                 ProductAttribute.objects.create(
                     product=product,
-                    name=attribute_names,
-                    values=attribute_values
+                    name=name,
+                    value=value
                 )
             
             
