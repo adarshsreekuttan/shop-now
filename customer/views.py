@@ -105,7 +105,7 @@ def customer_register(request):
 
 def home_view(request):
     
-    all_products = Product.objects.filter(status = "approved")
+    all_products = Product.objects.filter(status = "approved").order_by("-created_at")
     category = Category.objects.all()
 
     paginator = Paginator(all_products, 15)
@@ -113,6 +113,8 @@ def home_view(request):
     products = paginator.get_page(page_number)
 
     is_authenticated = request.user.is_authenticated
+
+    trending_products = Product.objects.order_by('?').annotate(avg_rating=Avg('reviews__rating'))[:3]
 
 
     for product in products:
@@ -138,7 +140,10 @@ def home_view(request):
         number_of_reviews = Reviews.objects.filter(product=product).count()
         product.number_of_reviews = number_of_reviews   
         
-    return render(request, 'customer/home.html', {"products":products, "categories":category, "is_authenticated":is_authenticated})
+    return render(request, 'customer/home.html', {"products":products, 
+                                                  "categories":category, 
+                                                  "is_authenticated":is_authenticated,
+                                                  "trending_products":trending_products})
     
 def load_subcategories(request):
     category_slug = request.GET.get('category')
@@ -309,13 +314,16 @@ def single_product_view(request, slug):
         number_of_reviews = Reviews.objects.filter(product=product).count()
         related_product.number_of_reviews = number_of_reviews
 
+    product_attributes = product.productattribute_set.all()
+
     return render(request, 'customer/single_product_view.html', 
                   {"product" : product, 
                    "is_in_wishlist" : is_in_wishlist, 
                    "reviews" : reviews, 
                    "related_products" : related_products,
                    "avg_rating": avg_rating,
-                   "number_of_ratings": number_of_ratings})
+                   "number_of_ratings": number_of_ratings,
+                   "product_attributes":product_attributes})
 
 @customer_required
 @login_required
@@ -345,7 +353,6 @@ def update_profile(request):
 @customer_required
 @login_required
 def password_update(request):
-    print(request.user.username)
     error = None
     user = request.user
     if request.method == 'POST':
