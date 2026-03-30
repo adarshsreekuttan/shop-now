@@ -353,7 +353,6 @@ def update_profile(request):
 @customer_required
 @login_required
 def password_update(request):
-    print(request.user.username)
     error = None
     user = request.user
     if request.method == 'POST':

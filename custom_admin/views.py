@@ -169,6 +169,7 @@ def edit_product(request,id):
     category = Category.objects.all()
     subcategory = SubCategory.objects.all()
     seller = SellerProfile.objects.all()
+    product_status = products.status
 
     if request.method  == 'POST':
 
@@ -176,7 +177,7 @@ def edit_product(request,id):
         products.name = request.POST.get('name')
         products.price = request.POST.get('price')
         products.discount_price = request.POST.get('discount_price')
-        products.status = True
+        products.status = product_status
         products.description = request.POST.get('description')
         products.stock = request.POST.get('stock')
         products.category_id = request.POST.get('category')
