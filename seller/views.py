@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model,update_session_auth_hash
 from .models import SellerProfile,SubCategory,Category,ProductImage
 from django.contrib import messages
 from django.utils.text import slugify
-from core.models import User, Product
+from core.models import User, Product,ProductAttribute
 from customer.models import Order,Reviews
 from .decorators import seller_required
 from django.http import JsonResponse
@@ -176,11 +176,15 @@ def seller_add_product(request):
         if first:
             first.is_primary=True
             first.save()
-        # attribute_names=request.POST.getlist("attribute_names")
-        # attribute_values=request.POST.getlist("attribute_values")
-        # for name, value in  zip(attribute_names,attribute_values):
-        #     if name and value:
-        #         product
+        attribute_names=request.POST.getlist("attribute_names")
+        attribute_values=request.POST.getlist("attribute_values")
+        for name, value in  zip(attribute_names,attribute_values):
+            if name and value:
+                ProductAttribute.objects.create(
+                    product=product,
+                    name=attribute_names,
+                    values=attribute_values
+                )
             
             
                          
