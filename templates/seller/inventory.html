@@ -48,41 +48,7 @@
 </head>
 <body class="text-text_dark flex flex-col min-h-screen">
 
-    <nav class="bg-primary_dark sticky top-0 z-50 shadow-md">
-        <div class="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
-            
-            <a href="{% url 'seller_home' %}" class="flex items-center gap-2 shrink-0">
-                <div class="w-8 h-8 bg-highlight rounded-md flex items-center justify-center text-primary_dark font-bold text-xl italic">F</div>
-                <span class="text-white font-bold text-lg tracking-wide hidden sm:block">FlipShop</span>
-            </a>
-
-            <div class="flex-1 max-w-3xl hidden md:block relative">
-                <input type="text" placeholder="Search your inventory by SKU, Title, or Category..." 
-                       class="w-full h-10 pl-4 pr-10 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-accent shadow-sm bg-white text-text_dark">
-                <button class="absolute right-0 top-0 h-10 w-12 text-primary_dark hover:text-primary transition font-bold flex items-center justify-center">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-            </div>
-
-            <div class="flex items-center gap-4 sm:gap-6 text-white font-medium text-sm shrink-0">
-                <a href="#" class="hover:text-highlight transition hidden sm:block">Login</a>
-                <a href="#" class="hover:text-highlight transition hidden sm:block">Orders</a>
-                
-                <a href="#" class="flex items-center gap-2 cursor-pointer relative hover:text-highlight transition">
-                    <i class="fa-solid fa-cart-shopping text-xl"></i>
-                    <span class="hidden sm:block">Cart</span>
-                    <span class="absolute -top-2 -right-2 sm:-right-4 bg-highlight text-primary_dark text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">3</span>
-                </a>
-            </div>
-        </div>
-        
-        <div class="md:hidden px-4 pb-3">
-            <div class="relative w-full">
-                <input type="text" placeholder="Search inventory..." class="w-full h-9 pl-4 pr-10 rounded-sm text-sm focus:outline-none bg-white text-text_dark">
-                <button class="absolute right-0 top-0 h-9 w-10 text-primary_dark flex items-center justify-center"><i class="fa-solid fa-magnifying-glass"></i></button>
-            </div>
-        </div>
-    </nav>
+        {% include 'seller/navbar.html' %}
 
     <main class="flex-1 container mx-auto px-2 sm:px-4 py-6 md:py-8">
 
@@ -136,26 +102,34 @@
 
                 <div class="p-3 md:p-4 flex flex-col flex-grow">
                     
-                    {% if product.category %}
-                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">{{ product.category.name }}</p>
-                    {% endif %}
+                    <div class="mb-auto">
+                        {% if product.category %}
+                        <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">{{ product.category.name }}</p>
+                        {% endif %}
 
-                    <h3 class="text-sm font-semibold text-text_dark line-clamp-2 leading-snug mb-2 group-hover:text-primary transition">
-                        {{ product.name }}
-                    </h3>
-                    
-                    <div class="flex items-center gap-1 mb-2">
-                        <div class="text-yellow-400 text-[10px] md:text-xs">
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star-half-stroke"></i>
+                        <h3 class="text-sm font-semibold text-text_dark line-clamp-2 leading-snug mb-1.5 group-hover:text-primary transition">
+                            {{ product.name }}
+                        </h3>
+                        
+                        <div class="flex items-center gap-1.5 mb-3">
+                            <div class="flex items-center text-yellow-400">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= product.avg_rating %}
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" viewBox="0 0 24 24">
+                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                </svg>
+                                {% else %}
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current text-gray-200" viewBox="0 0 24 24">
+                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                </svg>
+                                {% endif %}
+                            {% endfor %}
+                            </div>
+                            <span class="text-[10px] sm:text-xs font-medium text-gray-500 pt-0.5">({{ product.review_count }})</span>
                         </div>
-                        <span class="text-[10px] text-text_gray ml-1">(0)</span>
                     </div>
 
-                    <div class="flex items-end flex-wrap gap-x-2 gap-y-1 mb-4 mt-auto">
+                    <div class="flex items-end flex-wrap gap-x-2 gap-y-1 mb-4 mt-3">
                         <span class="text-base md:text-lg font-bold text-text_dark">₹{{ product.discount_price }}</span>
                         {% if product.price > product.discount_price %}
                             <span class="text-xs text-text_gray line-through mb-0.5">₹{{ product.price }}</span>
@@ -163,7 +137,7 @@
                         {% endif %}
                     </div>
 
-                    <a href="{% url 'seller_product_view' product.slug %}" class="w-full text-center bg-primary text-white py-2 rounded-md text-sm font-semibold hover:bg-opacity-90 transition mt-auto block">
+                    <a href="{% url 'seller_product_view' product.slug %}" class="w-full text-center bg-primary text-white py-2 rounded-md text-sm font-semibold hover:bg-opacity-90 transition block">
                         Edit Listing
                     </a>
                 </div>
@@ -178,50 +152,7 @@
             
         </div>
     </main>
-
-    <footer class="bg-primary_dark text-white mt-12 py-12">
-        <div class="container mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div>
-                <h4 class="text-highlight text-sm font-bold uppercase mb-4">About</h4>
-                <ul class="space-y-2 text-sm text-gray-300">
-                    <li><a href="#" class="hover:text-white transition">Contact Us</a></li>
-                    <li><a href="#" class="hover:text-white transition">About Us</a></li>
-                    <li><a href="#" class="hover:text-white transition">Careers</a></li>
-                    <li><a href="#" class="hover:text-white transition">Corporate Information</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-highlight text-sm font-bold uppercase mb-4">Help</h4>
-                <ul class="space-y-2 text-sm text-gray-300">
-                    <li><a href="#" class="hover:text-white transition">Payments</a></li>
-                    <li><a href="#" class="hover:text-white transition">Shipping</a></li>
-                    <li><a href="#" class="hover:text-white transition">Cancellation & Returns</a></li>
-                    <li><a href="#" class="hover:text-white transition">FAQ</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-highlight text-sm font-bold uppercase mb-4">Policy</h4>
-                <ul class="space-y-2 text-sm text-gray-300">
-                    <li><a href="#" class="hover:text-white transition">Return Policy</a></li>
-                    <li><a href="#" class="hover:text-white transition">Terms of Use</a></li>
-                    <li><a href="#" class="hover:text-white transition">Security</a></li>
-                    <li><a href="#" class="hover:text-white transition">Privacy</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-highlight text-sm font-bold uppercase mb-4">Social</h4>
-                <div class="flex gap-4 text-xl text-gray-300">
-                    <a href="#" class="hover:text-white transition"><i class="fa-brands fa-facebook"></i></a>
-                    <a href="#" class="hover:text-white transition"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="#" class="hover:text-white transition"><i class="fa-brands fa-youtube"></i></a>
-                    <a href="#" class="hover:text-white transition"><i class="fa-brands fa-instagram"></i></a>
-                </div>
-            </div>
-        </div>
-        <div class="container mx-auto px-4 mt-12 pt-8 border-t border-gray-600 text-center text-sm text-gray-400">
-            &copy; 2024 FlipShop. All rights reserved. Designed with Tailwind CSS.
-        </div>
-    </footer>
+    {% include 'seller/footer.html' %}
 
 </body>
 </html>

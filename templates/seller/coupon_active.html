@@ -40,20 +40,8 @@
 </head>
 <body class="text-text_dark flex flex-col min-h-screen">
 
-    <nav class="bg-primary_dark sticky top-0 z-50 shadow-md">
-        <div class="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
-            <a href="#" class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-highlight rounded flex items-center justify-center text-primary_dark font-bold text-xl italic">F</div>
-                <span class="text-white font-bold text-lg tracking-wide hidden sm:block">FlipShop <span class="text-xs font-normal text-highlight ml-1">Seller Hub</span></span>
-            </a>
-            <div class="flex items-center gap-4 text-white font-medium text-sm ml-auto">
-                <a href="#dashboard" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-sm transition">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    <span class="hidden sm:block">Back to Dashboard</span>
-                </a>
-            </div>
-        </div>
-    </nav>
+        {% include 'seller/navbar.html' %}
+
 
     <main class="flex-grow container mx-auto px-4 py-8 max-w-6xl">
 
@@ -131,7 +119,7 @@
                                     <span class="text-gray-400">{{ coupon.usage_limit }} Total</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-1.5 mb-1 overflow-hidden">
-                                    <div class="bg-primary h-1.5 rounded-full" style="width: {% widthratio coupon.used_count coupon.usage_limit 100 %}%"></div>
+                                    <div class="bg-primary h-1.5 rounded-full" style="width:{% widthratio coupon.used_count coupon.usage_limit 100 %}%"></div>
                                 </div>
                                 {% if coupon.used_count >= coupon.usage_limit %}
                                     <span class="text-[10px] text-red-500 font-bold">Limit Reached</span>
@@ -205,15 +193,7 @@
 
     </main>
 
-    <footer class="bg-primary_dark text-white mt-auto py-6 text-sm">
-        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-gray-400 text-xs gap-4 text-center md:text-left">
-            <p>© 2024 FlipShop Inc. Seller Services.</p>
-            <div class="flex gap-4">
-                <a href="#" class="hover:text-accent transition">Help Center</a>
-                <a href="#" class="hover:text-accent transition">Seller Policies</a>
-            </div>
-        </div>
-    </footer>
+    {% include 'seller/footer.html' %}
 
 </body>
 </html>

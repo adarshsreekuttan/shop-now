@@ -246,7 +246,7 @@ def reject_product_edit(request,slug):
         product.save()
         images=request.FILES.getlist('product_image')
         if images:
-            ProductImage.objects.filter(product=product).delete()
+            ProductImage.objects.filter(product=product)
             for img in images:
                 ProductImage.objects.create(
                     product=product,
@@ -313,7 +313,7 @@ def seller_product_edit(request,slug):
         product.save()
         images=request.FILES.getlist('product_image')
         if images:
-            ProductImage.objects.filter(product=product).delete()
+            ProductImage.objects.filter(product=product)
             for img in images:
                 ProductImage.objects.create(
                     product=product,
@@ -366,7 +366,7 @@ def finished_order(request):
 
 @seller_required
 def pending_single(request,slug):
-    product=Product.objects.get(slug=slug,approved=False)
+    product=Product.objects.get(slug=slug,status="pending")
     return render(request,'seller/pending_single.html',{'product':product})
 
 @seller_required
@@ -395,7 +395,7 @@ def pending_edit(request,slug):
         product.save()
         images=request.FILES.getlist('product_image')
         if images:
-            ProductImage.objects.filter(product=product).delete()
+            ProductImage.objects.filter(product=product)
             for img in images:
                 ProductImage.objects.create(
                     product=product,
