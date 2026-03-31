@@ -29,6 +29,7 @@ def admin_dashboard(request):
 
 def admin_pending_products(request):
     products = Product.objects.filter(status='pending')
+    messages.success(request,'Product approved successfully')
     return render(request,'admin/pending_products.html',{'products': products}) 
 
 

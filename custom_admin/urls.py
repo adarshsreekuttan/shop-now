@@ -28,5 +28,7 @@ urlpatterns = [
     path('deactivate_seller/<int:id>/',views.deactivate_seller,name='deactivate_seller'),
     path('pending_seller',views.pending_seller,name='pending_seller'),
     path('approve_seller/<int:id>/',views.approve_seller,name='approve_seller'),
+    path('approve_products/<int:id>/',views.approve_products,name='approve_products'),
+    path('reject_products/<int:id>/',views.reject_products,name='reject_products'),
 
 ]
