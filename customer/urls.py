@@ -4,7 +4,6 @@ from customer import views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    path('login/',views.customer_login, name='customer_login'),
     path('register/',views.customer_register, name='customer_register'),
     path('logout', views.customer_logout, name='customer_logout'),
 
