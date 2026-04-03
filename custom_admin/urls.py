@@ -30,5 +30,8 @@ urlpatterns = [
     path('approve_seller/<int:id>/',views.approve_seller,name='approve_seller'),
     path('approve_products/<int:id>/',views.approve_products,name='approve_products'),
     path('reject_products/<int:id>/',views.reject_products,name='reject_products'),
+    path('deactivate_user/<int:id>/',views.deactivate_user,name='deactivate_user'),
+    path('deactive_category_list/',views.deactive_category_list,name='deactive_category_list'),
+    path('deactive_subcategory_list/',views.deactive_subcategory_list,name='deactive_subcategory_list')
 
 ]

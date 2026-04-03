@@ -77,7 +77,6 @@ def edit_product(request,id):
     return render(request,'admin/edit_product.html',{'products':products, 'category':category, 'subcategory':subcategory, 'seller':seller})   
 
 
-
 def seller_view(request):
     sellers = SellerProfile.objects.all()
     return render(request,'admin/sellerview.html',{'sellers':sellers})
@@ -150,6 +149,12 @@ def deactivate_category(request,id):
     return redirect('category_list')
 
 
+def deactive_category_list(request):
+    category = Category.objects.filter(is_active=False)
+    print(category)
+    return render(request,'admin/deactive_category.html',{'category':category})
+
+
 def add_subcategory(request):
     categories = Category.objects.filter(is_active=True)
     if request.method == "POST":
@@ -192,6 +197,11 @@ def delete_subcategory(request,id):
     return redirect('subcategory_list')
 
 
+def deactive_subcategory_list(request):
+    subcategory = SubCategory.objects.filter(is_active=False)
+    return render(request,'admin/deactive_subcategory.html',{'subcategory':subcategory})
+
+
 def delete_product(request,id):
     products = Product.objects.get(id=id)
     products.delete()
@@ -201,6 +211,7 @@ def delete_product(request,id):
 def deactivate_user(request,id):
     user = User.objects.get(id=id)
     user.is_active = False
+    user.save()
     return redirect('user_view')
 
 
@@ -212,7 +223,7 @@ def order_details(request,id):
 
 def delete_order(request,id):
     orders = Order.objects.get(id=id)
-    orders.delete
+    orders.delete()
     return redirect('order_view')
 
 

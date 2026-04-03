@@ -101,12 +101,11 @@
                                 </td>
                                 <td class="px-6 py-5 whitespace-nowrap text-right">
                                     <div class="flex justify-end items-center gap-2">
-                                        <button class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Edit Permissions">
-                                            <i class="fas fa-user-gear text-xs"></i>
-                                        </button>
+                                        <a href="{% url 'deactivate_user' user.id %}" >               
                                         <button class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Deactivate User">
                                             <i class="fas fa-ban text-xs"></i>
                                         </button>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
