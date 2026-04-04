@@ -19,6 +19,14 @@
             .role-admin { @apply bg-purple-50 text-purple-700 border-purple-100; }
             .role-staff { @apply bg-blue-50 text-blue-700 border-blue-100; }
             .role-customer { @apply bg-slate-50 text-slate-600 border-slate-200; }
+            
+            .status-active { 
+                @apply px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 uppercase;
+            }
+
+            .btn-secondary {
+                @apply inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-600 border border-slate-200 text-sm font-bold rounded-xl hover:bg-slate-50 hover:text-rose-600 transition-all shadow-sm;
+            }
         }
     </style>
 </head>
@@ -34,23 +42,25 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
                 <div>
                     <h1 class="text-3xl font-black tracking-tight text-slate-900 flex items-center">
-                        User Accounts
-                        <span class="ml-4 px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-lg font-bold">
-                            {{ users|length }} Total
+                        Active Users
+                        <span class="ml-4 px-2 py-1 bg-emerald-100 text-emerald-700 text-xs rounded-lg font-bold">
+                            {{ users|length }} Live
                         </span>
                     </h1>
-                    <p class="text-slate-500 mt-1 font-medium">Manage permissions, staff access, and customer data.</p>
+                    <p class="text-slate-500 mt-1 font-medium">Currently active accounts with system access.</p>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex flex-wrap items-center gap-3">
                     <div class="relative group">
                         <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs transition-colors group-focus-within:text-indigo-500"></i>
-                        <input type="text" placeholder="Search by name or email..." 
-                               class="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none w-64 shadow-sm transition-all">
+                        <input type="text" placeholder="Search users..." 
+                               class="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none w-48 lg:w-64 shadow-sm transition-all">
                     </div>
-                    <button class="p-2 bg-white border border-slate-200 rounded-xl text-slate-500 hover:text-indigo-600 hover:border-indigo-200 transition-all shadow-sm">
-                        <i class="fas fa-filter text-sm"></i>
-                    </button>
+
+                    <a href="{% url 'deactive_user_list' %}" class="btn-secondary">
+                        <i class="fas fa-user-slash text-xs"></i>
+                        <span>View Deactivated</span>
+                    </a>
                 </div>
             </div>
 
@@ -61,14 +71,15 @@
                             <tr>
                                 <th class="table-head">Identity</th>
                                 <th class="table-head text-center">Role</th>
+                                <th class="table-head">Status</th>
                                 <th class="table-head">Contact</th>
                                 <th class="table-head">Last Active</th>
-                                <th class="table-head text-right">Settings</th>
+                                <th class="table-head text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50">
                             {% for user in users %}
-                            <tr class="group hover:bg-slate-50/50 transition-colors">
+                            {% if user.is_active %} <tr class="group hover:bg-slate-50/50 transition-colors">
                                 <td class="px-6 py-5 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="h-11 w-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-indigo-100 shadow-lg group-hover:scale-110 transition-transform">
@@ -82,6 +93,7 @@
                                         </div>
                                     </div>
                                 </td>
+
                                 <td class="px-6 py-5 whitespace-nowrap text-center">
                                     {% if user.is_superuser %}
                                         <span class="role-badge role-admin"><i class="fas fa-shield-halved mr-1"></i> Admin</span>
@@ -91,32 +103,41 @@
                                         <span class="role-badge role-customer">Customer</span>
                                     {% endif %}
                                 </td>
+
+                                <td class="px-6 py-5 whitespace-nowrap">
+                                    <span class="status-active">Active</span>
+                                </td>
+
                                 <td class="px-6 py-5 whitespace-nowrap">
                                     <span class="text-sm text-slate-600 font-medium">{{ user.email }}</span>
                                 </td>
+
                                 <td class="px-6 py-5 whitespace-nowrap">
                                     <div class="text-xs text-slate-500 font-semibold">
                                         {{ user.last_login|date:"M d, H:i"|default:"Never" }}
                                     </div>
                                 </td>
+
                                 <td class="px-6 py-5 whitespace-nowrap text-right">
                                     <div class="flex justify-end items-center gap-2">
-                                        <a href="{% url 'deactivate_user' user.id %}" >               
-                                        <button class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Deactivate User">
-                                            <i class="fas fa-ban text-xs"></i>
-                                        </button>
-                                        </a>
+                                        <form action="{% url 'deactivate_user' user.id %}" method="POST" onsubmit="return confirm('Deactivate this user? They will no longer be able to log in.')">
+                                            {% csrf_token %}
+                                            <button type="submit" class="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 rounded-xl transition-all" title="Deactivate User">
+                                                <i class="fas fa-ban text-xs"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
+                            {% endif %}
                             {% empty %}
                             <tr>
-                                <td colspan="5" class="px-6 py-20 text-center">
+                                <td colspan="6" class="px-6 py-20 text-center">
                                     <div class="inline-flex items-center justify-center w-16 h-16 bg-slate-50 rounded-full text-slate-200 mb-4 border border-slate-100">
                                         <i class="fas fa-users text-2xl"></i>
                                     </div>
-                                    <h3 class="text-slate-900 font-bold">The user list is empty</h3>
-                                    <p class="text-slate-500 text-sm mt-1">Check back later or invite new members.</p>
+                                    <h3 class="text-slate-900 font-bold">No active users found</h3>
+                                    <p class="text-slate-500 text-sm mt-1">All accounts are either deactivated or none exist.</p>
                                 </td>
                             </tr>
                             {% endfor %}
