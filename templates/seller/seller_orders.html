@@ -61,7 +61,7 @@
 
         <div class="bg-white rounded-t-xl card-shadow border-b border-gray-200 px-2 sm:px-6 overflow-x-auto hide-scrollbar">
             <div class="flex space-x-8 text-sm font-medium text-gray-500 whitespace-nowrap">
-                <a href="?status=all" class="py-4 border-b-2 {% if not request.GET.status or request.GET.status == 'all' %}border-primary text-primary{% else %}border-transparent hover:text-gray-700 hover:border-gray-300 transition{% endif %}">
+                <a href="" class="py-4 border-b-2 {% if not request.GET.status or request.GET.status == 'all' %}border-primary text-primary{% else %}border-transparent hover:text-gray-700 hover:border-gray-300 transition{% endif %}">
                     All Orders
                 </a>
                 <a href="{% url 'pending_order' %}" class="py-4 border-b-2 {% if request.GET.status == 'pending' %}border-primary text-primary{% else %}border-transparent hover:text-gray-700 hover:border-gray-300 transition{% endif %} flex items-center gap-2">
@@ -115,6 +115,7 @@
                         
                         {% for order in orders %}
                             {% with first_item=order.orderitem_set.first %}
+                            {% if first_item %}
                             <tr class="hover:bg-blue-50/30 transition-colors group">
                                 
                                 <td class="px-4 py-4 text-center">
@@ -196,6 +197,7 @@
                                     </div>
                                 </td>
                             </tr>
+                            {% endif %}
                             {% endwith %}
                         
                         {% empty %}
