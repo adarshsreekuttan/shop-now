@@ -7,7 +7,7 @@ def customer_required(view_func):
     def wrapped_view(request, *args, **kwargs):
 
         if request.user.role != "customer":
-            return redirect("customer_login")
+            return redirect("user_login")
 
         return view_func(request, *args, **kwargs)
 

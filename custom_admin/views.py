@@ -77,6 +77,30 @@ def edit_product(request,id):
     return render(request,'admin/edit_product.html',{'products':products, 'category':category, 'subcategory':subcategory, 'seller':seller})   
 
 
+def deactivate_product(request,id):
+    product = Product.objects.get(id=id)
+    product.is_active = False
+    product.save()
+    return redirect('product_view')
+
+
+def delete_product(request,id):
+    products = Product.objects.get(id=id)
+    products.delete()
+    return redirect('product_view')
+
+
+def deactive_product_list(request):
+    product = Product.objects.filter(is_active=False)
+    return render(request,'admin/deactive_product.html',{'product':product})
+
+
+def reapprove_product(request,id):
+    product = Product.objects.get(id=id)
+    product.is_active = True
+    product.save()
+    return redirect('deactive_product_list')
+
 
 def seller_view(request):
     sellers = SellerProfile.objects.all()
@@ -85,12 +109,31 @@ def seller_view(request):
 
 def order_view(request):
     orders = Order.objects.all()
-    return render(request,'admin/orderview.html',{'orders':orders})    
+    return render(request,'admin/orderview.html',{'orders':orders})   
 
 
 def user_view(request):
     users = User.objects.all()
     return render(request,'admin/userview.html',{'users':users})
+
+
+def deactivate_user(request,id):
+    user = User.objects.get(id=id)
+    user.is_active = False
+    user.save()
+    return redirect('user_view')
+
+
+def deactive_user_list(request):
+    user = User.objects.filter(is_active=False)
+    return render(request,'admin/deactive_user.html',{'user':user})
+
+
+def reapprove_user(request,id):
+    user = User.objects.get(id=id)
+    user.is_active = True
+    user.save()
+    return redirect('deactive_user_list')
 
 
 def add_category(request):
@@ -136,7 +179,7 @@ def update_category(request,id):
     return render(request,'admin/update_category.html',{'category':category})
 
 
-def active_category(request,id):
+def reapprove_category(request,id):
     category = Category.objects.get(id=id)
     category.is_active = True
     category.save()
@@ -148,6 +191,11 @@ def deactivate_category(request,id):
     category.is_active = False
     category.save()
     return redirect('category_list')
+
+
+def deactive_category_list(request):
+    category = Category.objects.filter(is_active=False)
+    return render(request,'admin/deactive_category.html',{'category':category})
 
 
 def add_subcategory(request):
@@ -192,16 +240,23 @@ def delete_subcategory(request,id):
     return redirect('subcategory_list')
 
 
-def delete_product(request,id):
-    products = Product.objects.get(id=id)
-    products.delete()
-    return redirect('product_view')
+def deactivate_subcategory(request,id):
+    subcategories = SubCategory.objects.get(id=id)
+    subcategories.is_active = False
+    subcategories.save()
+    return redirect('subcategory_list')
 
 
-def deactivate_user(request,id):
-    user = User.objects.get(id=id)
-    user.is_active = False
-    return redirect('user_view')
+def deactive_subcategory_list(request):
+    subcategory = SubCategory.objects.filter(is_active=False)
+    return render(request,'admin/deactive_subcategory.html',{'subcategory':subcategory})
+
+
+def reapprove_subcategory(request,id):
+    subcategory = SubCategory.objects.get(id=id)
+    subcategory.is_active = True
+    subcategory.save()
+    return redirect('subcategory_list')
 
 
 def order_details(request,id):
@@ -212,7 +267,7 @@ def order_details(request,id):
 
 def delete_order(request,id):
     orders = Order.objects.get(id=id)
-    orders.delete
+    orders.delete()
     return redirect('order_view')
 
 
@@ -240,3 +295,18 @@ def approve_seller(request,id):
     sellers.approved = True
     sellers.save()
     return redirect('pending_seller')
+<<<<<<< HEAD
+=======
+
+
+def deactive_selller_list(request):
+    seller = SellerProfile.objects.filter(is_active=False)
+    return render(request,'admin/deactive_seller.html',{'seller':seller})
+
+
+def reapprove_seller(request,id):
+    seller = SellerProfile.objects.get(id=id)
+    seller.is_active = True
+    seller.save()
+    return redirect('deactive_seller_list')
+>>>>>>> e7ba6d58e64c68fb9788d8d56d93db02e280c57d
