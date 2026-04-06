@@ -3,11 +3,12 @@ from seller import views
 
 
 urlpatterns = [
-    path('seller_registration',views.seller_registration,name="seller_registration"),
+    path('register',views.register,name="register"),
     path('seller_login',views.seller_login,name="seller_login"),
     path('seller_logout',views.seller_logout,name="seller_logout"),
     path('seller_home',views.seller_home,name="seller_home"),
     path('seller_profile',views.seller_profile,name="seller_profile"),
+    path('verified',views.verified,name="verified"),
     path('seller_profile_edit',views.seller_profile_edit,name="seller_profile_edit"),
     path('set_primary_img/<int:id>',views.set_primary_img,name='set_primary_img'),
     path('password_reset',views.password_reset,name="password_reset"),

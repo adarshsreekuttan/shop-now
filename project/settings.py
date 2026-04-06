@@ -30,6 +30,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'shopnow.mysmeclabs.com',
+    'shopnowalex.mysmeclabs.com',
     'shopnowprem.mysmeclabs.com',
     '51.20.107.71',
     'localhost',
@@ -191,3 +192,4 @@ load_dotenv()
 
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+

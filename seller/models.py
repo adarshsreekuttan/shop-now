@@ -57,3 +57,19 @@ class ProductImage(models.Model):
     product = models.ForeignKey('core.Product',on_delete=models.CASCADE)
     image = models.ImageField(upload_to="product_images/")
     is_primary = models.BooleanField(default=False)   
+    
+    def __str__(self):
+        return self.product.name
+
+class VerifiedDoc(models.Model):
+    document_choices=[('pan_card', 'PAN Card (Business/Personal)'),
+        ('gst_certificate', 'GST Registration Certificate'),
+        ('aadhar_card', 'Aadhar Card (Owner)'),
+        ('trade_license', 'Trade License / Shop Act'),
+        ('bank_statement', 'Canceled Cheque / Bank Statement')]
+    seller=models.ForeignKey('seller.sellerprofile',on_delete=models.CASCADE)
+    document_type=models.FileField(max_length=50,upload_to='verification_docs/')
+    note=models.TextField(null=True,blank=True)    
+        
+    def __str__(self):
+        return f"{self.seller.shop_name} - {self.document_type}"
