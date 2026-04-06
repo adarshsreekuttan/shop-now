@@ -27,7 +27,14 @@ SECRET_KEY = 'django-insecure-1tudm!+-*6o7hj%5(fdwm*pmpg@gmluf+hbvp29k@p2@o6@wy$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["51.20.107.71", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [
+    'shopnow.mysmeclabs.com',
+    'shopnowalex.mysmeclabs.com',
+    'shopnowprem.mysmeclabs.com',
+    '51.20.107.71',
+    'localhost',
+    '127.0.0.1'
+]
 
 
 

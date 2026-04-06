@@ -295,11 +295,9 @@ def approve_seller(request,id):
     sellers.approved = True
     sellers.save()
     return redirect('pending_seller')
-<<<<<<< HEAD
-=======
 
 
-def deactive_selller_list(request):
+def deactive_seller_list(request):
     seller = SellerProfile.objects.filter(is_active=False)
     return render(request,'admin/deactive_seller.html',{'seller':seller})
 
@@ -309,4 +307,3 @@ def reapprove_seller(request,id):
     seller.is_active = True
     seller.save()
     return redirect('deactive_seller_list')
->>>>>>> e7ba6d58e64c68fb9788d8d56d93db02e280c57d
