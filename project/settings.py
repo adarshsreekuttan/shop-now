@@ -29,6 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'shopnow.mysmeclabs.com',
+    'shopnowprem.mysmeclabs.com',
     '51.20.107.71',
     'localhost',
     '127.0.0.1'
