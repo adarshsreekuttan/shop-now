@@ -297,7 +297,7 @@ def approve_seller(request,id):
     return redirect('pending_seller')
 
 
-def deactive_selller_list(request):
+def deactive_seller_list(request):
     seller = SellerProfile.objects.filter(is_active=False)
     return render(request,'admin/deactive_seller.html',{'seller':seller})
 

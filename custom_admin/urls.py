@@ -40,7 +40,7 @@ urlpatterns = [
     path('reapprove_product/<int:id>/',views.reapprove_product,name='reapprove_product'),
     path('deactive_user_list',views.deactive_user_list,name='deactive_user_list'),
     path('reapprove_user/<int:id>/',views.reapprove_user,name='reapprove_user'),
-    path('deactive_seller_list',views.deactive_selller_list,name='deactive_seller_list'),
+    path('deactive_seller_list',views.deactive_seller_list,name='deactive_seller_list'),
      path('reapprove_seller/<int:id>/',views.reapprove_seller,name='reapprove_seller'),
 
 ]
