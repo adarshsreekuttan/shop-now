@@ -113,7 +113,7 @@ def order_view(request):
 
 
 def user_view(request):
-    users = User.objects.all()
+    users = User.objects.filter(is_superuser=False)
     return render(request,'admin/userview.html',{'users':users})
 
 
