@@ -17,9 +17,6 @@ from django.core.paginator import Paginator
 # Create your views here.
 User = get_user_model()
 
-def testing(request):
-    product=Product.objects.filter(status='approved')
-    return render(request,'seller/testing.html',{'product':product})
 
 def register(request):
     if request.method=='POST':
@@ -53,34 +50,32 @@ def register(request):
         return redirect('seller_login')     
     return render(request,"seller/register.html")
 
-def seller_login(request):
-    if request.method == "POST":
-        email = request.POST.get('seller_email')
-        password = request.POST.get('seller_password')
+# def seller_login(request):
+#     if request.method == "POST":
+#         email = request.POST.get('seller_email')
+#         password = request.POST.get('seller_password')
 
-        user = authenticate(request, username=email, password=password)
+#         user = authenticate(request, username=email, password=password)
 
-        if user is None:
-            messages.error(request, "Invalid email or password")
-            return redirect('seller_login')
+#         if user is None:
+#             messages.error(request, "Invalid email or password")
+#             return redirect('seller_login')
 
-        if user.role != 'seller':
-            messages.error(request, "You are not a seller")
-            return redirect('seller_login')
+#        
 
-        sellerprofile = user.seller_profile
+#         sellerprofile = user.seller_profile
 
-        if not sellerprofile.approved:
-            messages.error(request, "Your seller account is waiting for admin approval")
-            return redirect('seller_login')
+#         if not sellerprofile.approved:
+#             messages.error(request, "Your seller account is waiting for admin approval")
+#             return redirect('seller_login')
 
-        login(request, user)
-        return redirect('seller_home')
+#         login(request, user)
+#         return redirect('seller_home')
 
-    return render(request, "seller/seller_login.html")
+#     return render(request, "seller/seller_login.html")
 def seller_logout(request):
-    logout(request)
-    return redirect(seller_login)
+     logout(request)
+     return redirect('user_login')
 
 @seller_required
 def seller_home(request):

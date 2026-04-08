@@ -4,7 +4,6 @@ from seller import views
 
 urlpatterns = [
     path('register',views.register,name="register"),
-    path('seller_login',views.seller_login,name="seller_login"),
     path('seller_logout',views.seller_logout,name="seller_logout"),
     path('seller_home',views.seller_home,name="seller_home"),
     path('seller_profile',views.seller_profile,name="seller_profile"),
@@ -38,7 +37,6 @@ urlpatterns = [
     path('coupon_active',views.coupon_active,name='coupon_active'),
     path('coupon_pending',views.coupon_pending,name='coupon_pending'),
     path('coupon_delete/<int:id>',views.coupon_delete,name='coupon_delete'),
-    path('testing',views.testing,name='testing'),
 
 ]
 
