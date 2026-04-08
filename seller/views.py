@@ -27,7 +27,7 @@ def register(request):
             return redirect('seller_registration')
         if password!=request.POST.get('confirm_password'):
             messages.error(request,'password in not matched')
-            return redirect('seller_registration')
+            return redirect('register')
         user=User.objects.create_user(
             username=email,
             email=email,
