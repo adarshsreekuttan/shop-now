@@ -1,9 +1,11 @@
 
 from django.urls import path
 from custom_admin import views
+# from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-
+  
+    # path('login/', auth_views.LoginView.as_view(), name='login'),
     path('admin_dashboard/',views.admin_dashboard,name='admin_dashboard'),
     path('pending_products/',views.admin_pending_products,name='pending_products'),
     path('product_view/',views.products_view,name='product_view'),
