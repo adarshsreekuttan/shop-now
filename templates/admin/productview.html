@@ -22,65 +22,88 @@
             .badge-inactive { 
                 @apply px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border bg-rose-50 text-rose-600 border-rose-100; 
             }
-            .btn-primary {
-                @apply inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100;
-            }
             .btn-secondary {
-                @apply inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-600 border border-slate-200 text-sm font-bold rounded-xl hover:bg-slate-50 transition-all;
+                @apply inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-600 border border-slate-200 text-xs md:text-sm font-bold rounded-xl hover:bg-slate-50 transition-all;
             }
         }
+
+        /* Custom scrollbar for mobile table */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+    </script>
 </head>
 
-<body class="bg-[#f8fafc] text-slate-900 antialiased font-sans">
+<body class="bg-[#f8fafc] text-slate-900 antialiased font-sans relative overflow-x-hidden">
+
+<div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 z-40 hidden md:hidden transition-opacity"></div>
 
 <div class="flex min-h-screen">
 
-    <aside class="w-64 flex-shrink-0 border-r border-slate-200 bg-white">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform -translate-x-full md:translate-x-0 md:sticky md:top-0 h-screen transition-transform duration-300 ease-in-out flex-shrink-0 overflow-y-auto">
+        <div class="p-6 flex justify-between items-center md:hidden border-b border-slate-100 mb-2">
+            <span class="font-black text-indigo-600 uppercase tracking-widest text-xs">Admin Panel</span>
+            <button onclick="toggleSidebar()" class="text-slate-400 p-2">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
         {% include 'admin/admin_navbar.html' %}
     </aside>
 
-    <main class="flex-1 p-6 lg:p-10">
+    <main class="flex-1 min-w-0">
+        <header class="md:hidden flex items-center justify-between p-4 bg-white border-b border-slate-200 sticky top-0 z-30">
+            <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-xl border border-slate-200 text-slate-600">
+                <i class="fas fa-bars-staggered"></i>
+            </button>
+            <span class="font-black text-slate-900 text-xs uppercase tracking-widest">Inventory</span>
+            <div class="w-10"></div> 
+        </header>
 
-        <div class="max-w-7xl mx-auto">
+        <div class="max-w-7xl mx-auto p-4 md:p-8 lg:p-10">
 
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-6">
                 <div>
-                    <h1 class="text-3xl font-black tracking-tight text-slate-900">Product Inventory</h1>
-                    <p class="text-slate-500">View and manage all your store products in one place.</p>
+                    <h1 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900">Product Inventory</h1>
+                    <p class="text-sm md:text-base text-slate-500">Manage all store products in one place.</p>
                 </div>
                 
                 <div class="flex items-center gap-3">
-                    <a href="{% url 'deactive_product_list' %}" class="btn-secondary">
+                    <a href="{% url 'deactive_product_list' %}" class="btn-secondary w-full md:w-auto justify-center">
                         <i class="fas fa-eye-slash text-xs"></i>
                         Deactivated List
                     </a>
-                  
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest">Total Items</span>
-                    <h3 class="text-2xl font-black mt-1">{{ products|length }}</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-8">
+                <div class="bg-white p-5 md:p-6 rounded-2xl border border-slate-200 shadow-sm transition-transform hover:scale-[1.02]">
+                    <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Total Items</span>
+                    <h3 class="text-xl md:text-2xl font-black mt-1">{{ products|length }}</h3>
                 </div>
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest">Active List</span>
-                    <h3 class="text-2xl font-black mt-1 text-emerald-500">{{ active_count|default:"Live" }}</h3>
+                <div class="bg-white p-5 md:p-6 rounded-2xl border border-slate-200 shadow-sm transition-transform hover:scale-[1.02]">
+                    <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest text-emerald-500">Active List</span>
+                    <h3 class="text-xl md:text-2xl font-black mt-1 text-emerald-500">{{ active_count|default:"Live" }}</h3>
                 </div>
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest">Deactivated</span>
-                    <h3 class="text-2xl font-black mt-1 text-rose-500">{{ inactive_count|default:"Hidden" }}</h3>
+                <div class="bg-white p-5 md:p-6 rounded-2xl border border-slate-200 shadow-sm transition-transform hover:scale-[1.02]">
+                    <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest text-rose-500">Deactivated</span>
+                    <h3 class="text-xl md:text-2xl font-black mt-1 text-rose-500">{{ inactive_count|default:"Hidden" }}</h3>
                 </div>
             </div>
 
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto no-scrollbar">
                     <table class="min-w-full divide-y divide-slate-200">
                         <thead>
                             <tr>
                                 <th class="table-head">Product</th>
-                                <th class="table-head">Category</th>
+                                <th class="table-head hidden sm:table-cell">Category</th>
                                 <th class="table-head">Price</th>
                                 <th class="table-head">Status</th>
                                 <th class="table-head text-right">Actions</th>
@@ -89,38 +112,37 @@
                         <tbody class="divide-y divide-slate-100 bg-white">
                             {% for p in products %}
                             <tr class="group hover:bg-slate-50/50 transition-colors">
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <div class="h-12 w-12 flex-shrink-0 rounded-lg overflow-hidden border border-slate-100">
+                                        <div class="h-10 w-10 md:h-12 md:w-12 flex-shrink-0 rounded-lg overflow-hidden border border-slate-100">
                                             <img class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300" 
                                                  src="{{ p.image.url|default:'https://via.placeholder.com/150' }}" 
                                                  alt="{{ p.name }}">
                                         </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-bold text-slate-900">{{ p.name }}</div>
-                                            <div class="text-[11px] text-slate-400 font-mono">SKU: #{{ p.id }}</div>
+                                        <div class="ml-3 md:ml-4 overflow-hidden">
+                                            <div class="text-xs md:text-sm font-bold text-slate-900 truncate max-w-[120px] md:max-w-none">{{ p.name }}</div>
+                                            <div class="text-[10px] text-slate-400 font-mono">#{{ p.id }}</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-sm text-slate-600">
+                                <td class="px-6 py-4 text-xs md:text-sm text-slate-600 hidden sm:table-cell">
                                     {{ p.category }}
                                 </td>
-                                <td class="px-6 py-4 text-sm font-bold text-slate-900">
+                                <td class="px-6 py-4 text-xs md:text-sm font-bold text-slate-900">
                                     ${{ p.price }}
                                 </td>
                                 <td class="px-6 py-4">
                                     {% if p.is_active %}
                                         <span class="badge-active">Live</span>
                                     {% else %}
-                                        <span class="badge-inactive">Deactivated</span>
+                                        <span class="badge-inactive">Off</span>
                                     {% endif %}
                                 </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        
+                                <td class="px-4 md:px-6 py-4 text-right">
+                                    <div class="flex justify-end gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                         <a href="{% url 'edit_product' p.id %}" 
                                            class="btn-icon bg-white text-slate-400 border-slate-200 hover:text-indigo-600 hover:border-indigo-200"
-                                           title="Edit Product">
+                                           title="Edit">
                                             <i class="fas fa-pen text-[10px]"></i>
                                         </a>
 
@@ -131,13 +153,11 @@
                                                 <i class="fas fa-power-off text-[10px]"></i>
                                             </button>
                                         </form>
-                                     
-                                     
                                         {% endif %}
 
-                                        <form action="{% url 'delete_product' p.id %}" method="POST" class="inline" onclick="return confirm('Permanently delete this product?')">
+                                        <form action="{% url 'delete_product' p.id %}" method="POST" class="inline" onclick="return confirm('Delete this product?')">
                                             {% csrf_token %}
-                                            <button type="submit" class="btn-icon bg-white text-slate-400 border-slate-200 hover:text-slate-900 hover:border-slate-900">
+                                            <button type="submit" class="btn-icon bg-white text-slate-400 border-slate-200 hover:text-slate-900 hover:border-slate-900" title="Delete">
                                                 <i class="fas fa-trash-can text-[10px]"></i>
                                             </button>
                                         </form>
@@ -147,11 +167,11 @@
                             {% empty %}
                             <tr>
                                 <td colspan="5" class="text-center py-24">
-                                    <div class="flex flex-col items-center">
-                                        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                                    <div class="flex flex-col items-center p-4">
+                                        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-dashed border-slate-200">
                                             <i class="fas fa-box-open text-slate-200 text-3xl"></i>
                                         </div>
-                                        <p class="text-slate-400 font-medium text-lg">Your inventory is empty</p>
+                                        <p class="text-slate-400 font-medium text-lg text-center">Your inventory is currently empty</p>
                                     </div>
                                 </td>
                             </tr>
@@ -160,11 +180,13 @@
                     </table>
                 </div>
             </div>
+            
+            <p class="md:hidden text-center text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-6">
+                <i class="fas fa-arrows-left-right mr-1"></i> Swipe table to see details
+            </p>
 
         </div>
-
     </main>
-
 </div>
 
 </body>

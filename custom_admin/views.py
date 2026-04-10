@@ -6,8 +6,8 @@ from core.models import *
 from seller.models import *
 from custom_admin.models import *
 from django.contrib import messages
-from custom_admin.decorators import admin_required
-from django.contrib.auth.decorators import login_required
+# from custom_admin.decorators import admin_required
+# from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.

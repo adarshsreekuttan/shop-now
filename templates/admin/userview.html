@@ -14,7 +14,7 @@
                 @apply px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-[0.15em] bg-slate-50/50 border-b border-slate-100;
             }
             .role-badge {
-                @apply px-2.5 py-0.5 rounded-md text-[10px] font-bold border uppercase;
+                @apply px-2.5 py-0.5 rounded-md text-[10px] font-bold border uppercase whitespace-nowrap;
             }
             .role-admin { @apply bg-purple-50 text-purple-700 border-purple-100; }
             .role-staff { @apply bg-blue-50 text-blue-700 border-blue-100; }
@@ -25,51 +25,71 @@
             }
 
             .btn-secondary {
-                @apply inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-600 border border-slate-200 text-sm font-bold rounded-xl hover:bg-slate-50 hover:text-rose-600 transition-all shadow-sm;
+                @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-white text-slate-600 border border-slate-200 text-sm font-bold rounded-xl hover:bg-slate-50 hover:text-rose-600 transition-all shadow-sm;
             }
+
+            /* Sidebar Toggle Logic */
+            #sidebar-overlay.active { @apply block; }
+            #sidebar.active { @apply translate-x-0; }
         }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900 antialiased font-sans flex min-h-screen">
+<body class="bg-[#f8fafc] text-slate-900 antialiased font-sans flex min-h-screen relative">
 
-    <aside class="w-64 bg-white border-r border-slate-200 sticky top-0 h-screen overflow-y-auto z-50 flex-shrink-0">
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 z-[60] hidden transition-opacity md:hidden"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-[70] w-64 bg-white border-r border-slate-200 transform -translate-x-full md:translate-x-0 md:sticky md:top-0 h-screen transition-transform duration-300 ease-in-out flex-shrink-0 overflow-y-auto">
+        <div class="p-6 flex justify-between items-center md:hidden border-b border-slate-100 mb-2">
+            <span class="font-black text-indigo-600 uppercase tracking-widest text-xs">Admin Panel</span>
+            <button onclick="toggleSidebar()" class="text-slate-400 p-2">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
         {% include 'admin/admin_navbar.html' %}
     </aside>
 
     <main class="flex-1 min-w-0">
-        <div class="max-w-7xl mx-auto px-4 md:px-8 py-10">
+        <header class="md:hidden flex items-center justify-between p-4 bg-white border-b border-slate-200 sticky top-0 z-40">
+            <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-xl border border-slate-200 text-slate-600">
+                <i class="fas fa-bars-staggered"></i>
+            </button>
+            <span class="font-black text-slate-900 text-xs uppercase tracking-widest">User Management</span>
+            <div class="w-10"></div> 
+        </header>
+
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-10">
             
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8 md:mb-10 gap-6">
                 <div>
-                    <h1 class="text-3xl font-black tracking-tight text-slate-900 flex items-center">
+                    <h1 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 flex items-center flex-wrap gap-3">
                         Active Users
-                        <span class="ml-4 px-2 py-1 bg-emerald-100 text-emerald-700 text-xs rounded-lg font-bold">
+                        <span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs rounded-lg font-bold whitespace-nowrap">
                             {{ users|length }} Live
                         </span>
                     </h1>
-                    <p class="text-slate-500 mt-1 font-medium">Currently active accounts with system access.</p>
+                    <p class="text-slate-500 mt-1 font-medium text-sm md:text-base">Currently active accounts with system access.</p>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-3">
-                    <div class="relative group">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <div class="relative group flex-1 sm:flex-none">
                         <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs transition-colors group-focus-within:text-indigo-500"></i>
                         <input type="text" placeholder="Search users..." 
-                               class="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none w-48 lg:w-64 shadow-sm transition-all">
+                               class="pl-9 pr-4 py-2.5 md:py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none w-full sm:w-48 lg:w-64 shadow-sm transition-all">
                     </div>
 
-                    <a href="{% url 'deactive_user_list' %}" class="btn-secondary">
+                    <a href="{% url 'deactive_user_list' %}" class="btn-secondary py-2.5 md:py-2">
                         <i class="fas fa-user-slash text-xs"></i>
                         <span>View Deactivated</span>
                     </a>
                 </div>
             </div>
 
-            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden">
-                <div class="overflow-x-auto">
+            <div class="bg-white rounded-2xl md:rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto scrollbar-hide">
                     <table class="min-w-full divide-y divide-slate-100">
                         <thead>
                             <tr>
-                                <th class="table-head">Identity</th>
+                                <th class="table-head min-w-[200px]">Identity</th>
                                 <th class="table-head text-center">Role</th>
                                 <th class="table-head">Status</th>
                                 <th class="table-head">Contact</th>
@@ -79,10 +99,11 @@
                         </thead>
                         <tbody class="divide-y divide-slate-50">
                             {% for user in users %}
-                            {% if user.is_active %} <tr class="group hover:bg-slate-50/50 transition-colors">
-                                <td class="px-6 py-5 whitespace-nowrap">
+                            {% if user.is_active %}
+                            <tr class="group hover:bg-slate-50/50 transition-colors">
+                                <td class="px-6 py-4 md:py-5 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <div class="h-11 w-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-indigo-100 shadow-lg group-hover:scale-110 transition-transform">
+                                        <div class="h-10 w-10 md:h-11 md:w-11 rounded-xl md:rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-indigo-100 shadow-lg group-hover:scale-110 transition-transform">
                                             {{ user.username|slice:":1"|upper }}
                                         </div>
                                         <div class="ml-4">
@@ -94,7 +115,7 @@
                                     </div>
                                 </td>
 
-                                <td class="px-6 py-5 whitespace-nowrap text-center">
+                                <td class="px-6 py-4 md:py-5 whitespace-nowrap text-center text-xs">
                                     {% if user.is_superuser %}
                                         <span class="role-badge role-admin"><i class="fas fa-shield-halved mr-1"></i> Admin</span>
                                     {% elif user.is_staff %}
@@ -104,23 +125,23 @@
                                     {% endif %}
                                 </td>
 
-                                <td class="px-6 py-5 whitespace-nowrap">
+                                <td class="px-6 py-4 md:py-5 whitespace-nowrap">
                                     <span class="status-active">Active</span>
                                 </td>
 
-                                <td class="px-6 py-5 whitespace-nowrap">
+                                <td class="px-6 py-4 md:py-5 whitespace-nowrap">
                                     <span class="text-sm text-slate-600 font-medium">{{ user.email }}</span>
                                 </td>
 
-                                <td class="px-6 py-5 whitespace-nowrap">
+                                <td class="px-6 py-4 md:py-5 whitespace-nowrap">
                                     <div class="text-xs text-slate-500 font-semibold">
                                         {{ user.last_login|date:"M d, H:i"|default:"Never" }}
                                     </div>
                                 </td>
 
-                                <td class="px-6 py-5 whitespace-nowrap text-right">
+                                <td class="px-6 py-4 md:py-5 whitespace-nowrap text-right">
                                     <div class="flex justify-end items-center gap-2">
-                                        <form action="{% url 'deactivate_user' user.id %}" method="POST" onsubmit="return confirm('Deactivate this user? They will no longer be able to log in.')">
+                                        <form action="{% url 'deactivate_user' user.id %}" method="POST" onsubmit="return confirm('Deactivate this user?')">
                                             {% csrf_token %}
                                             <button type="submit" class="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 rounded-xl transition-all" title="Deactivate User">
                                                 <i class="fas fa-ban text-xs"></i>
@@ -132,8 +153,8 @@
                             {% endif %}
                             {% empty %}
                             <tr>
-                                <td colspan="6" class="px-6 py-20 text-center">
-                                    <div class="inline-flex items-center justify-center w-16 h-16 bg-slate-50 rounded-full text-slate-200 mb-4 border border-slate-100">
+                                <td colspan="6" class="px-6 py-16 md:py-20 text-center">
+                                    <div class="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-slate-50 rounded-full text-slate-200 mb-4 border border-slate-100">
                                         <i class="fas fa-users text-2xl"></i>
                                     </div>
                                     <h3 class="text-slate-900 font-bold">No active users found</h3>
@@ -145,8 +166,28 @@
                     </table>
                 </div>
             </div>
+            <div class="mt-4 flex items-center justify-center md:hidden text-slate-400 gap-2">
+                <i class="fas fa-arrow-left-long text-[10px] animate-pulse"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Swipe to view more</span>
+                <i class="fas fa-arrow-right-long text-[10px] animate-pulse"></i>
+            </div>
         </div>
     </main>
 
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            // Prevent body scroll when sidebar is open
+            if (sidebar.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+    </script>
 </body>
 </html>

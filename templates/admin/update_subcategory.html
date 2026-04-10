@@ -6,49 +6,69 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>Update Subcategory</title>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .mobile-sidebar-active {
+                @apply translate-x-0 !important;
+            }
+        }
+    </style>
 </head>
-<body class="bg-slate-50 min-h-screen font-sans flex"> 
+<body class="bg-slate-50 min-h-screen font-sans flex relative overflow-x-hidden"> 
     
-    <aside class="w-64 min-h-screen sticky top-0 bg-white border-r border-slate-200 hidden md:block">
+    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden transition-opacity md:hidden"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-50 transform -translate-x-full transition-transform duration-300 md:relative md:translate-x-0 md:block shrink-0">
+        <div class="p-6 flex items-center justify-between md:hidden border-b border-slate-50">
+            <span class="font-black text-indigo-600 uppercase tracking-widest text-sm">Menu</span>
+            <button id="closeSidebar" class="text-slate-400 p-2"><i class="fas fa-times"></i></button>
+        </div>
         {% include 'admin/admin_navbar.html' %}
     </aside>
 
-    <main class="flex-1 py-10 px-4 md:px-12">
+    <main class="flex-1 py-6 md:py-10 px-4 md:px-12 w-full">
+        <div class="flex items-center justify-between mb-6 md:hidden">
+            <button id="openSidebar" class="bg-white p-3 rounded-xl border border-slate-200 text-slate-600 shadow-sm">
+                <i class="fas fa-bars-staggered"></i>
+            </button>
+            <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Subcategory Admin</span>
+        </div>
+
         <div class="max-w-3xl mx-auto">
             
-            <nav class="flex text-xs font-bold text-indigo-600 uppercase tracking-widest mb-4 gap-2">
+            <nav class="flex text-[10px] md:text-xs font-bold text-indigo-600 uppercase tracking-widest mb-4 gap-2 overflow-x-auto whitespace-nowrap">
                 <a href="{% url 'subcategory_list' %}" class="hover:underline">Subcategories</a>
                 <span class="text-slate-300">/</span>
                 <span class="text-slate-500">Edit Subcategory</span>
             </nav>
 
-            <div class="mb-10">
-                <h1 class="text-3xl font-black text-slate-900 tracking-tight">Update Subcategory</h1>
-                <p class="text-slate-500 mt-1 font-medium">Modify details for <span class="text-indigo-600">"{{ subcategory.name }}"</span></p>
+            <div class="mb-8 md:mb-10 text-center md:text-left">
+                <h1 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Update Subcategory</h1>
+                <p class="text-sm md:text-base text-slate-500 mt-1 font-medium">Modify details for <span class="text-indigo-600">"{{ subcategory.name }}"</span></p>
             </div>
 
-            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                <form action="{% url 'update_subcategory' subcategory.id %}" method="POST" class="p-8 space-y-8">
+            <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                <form action="{% url 'update_subcategory' subcategory.id %}" method="POST" class="p-6 md:p-8 space-y-6 md:space-y-8">
                     {% csrf_token %}
                     
-                    <div class="grid grid-cols-1 gap-8">
+                    <div class="grid grid-cols-1 gap-6 md:gap-8">
                         
                         <div>
-                            <label for="name" class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-3">
+                            <label for="name" class="block text-[10px] md:text-xs font-black text-slate-700 uppercase tracking-wider mb-3">
                                 Subcategory Name
                             </label>
                             <input type="text" name="name" id="name" value="{{ subcategory.name }}" required
-                                   class="w-full px-5 py-4 rounded-2xl border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none text-slate-800 font-medium"
+                                   class="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none text-slate-800 font-medium text-sm md:text-base"
                                    placeholder="Enter subcategory name">
                         </div>
 
                         <div>
-                            <label for="category" class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-3">
+                            <label for="category" class="block text-[10px] md:text-xs font-black text-slate-700 uppercase tracking-wider mb-3">
                                 Parent Category
                             </label>
                             <div class="relative">
                                 <select name="category" id="category" required
-                                        class="w-full px-5 py-4 rounded-2xl border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none text-slate-800 font-medium appearance-none bg-white">
+                                        class="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none text-slate-800 font-medium appearance-none bg-white text-sm md:text-base">
                                     {% for cat in categories %}
                                         <option value="{{ cat.id }}" {% if cat.id == subcategory.category.id %}selected{% endif %}>
                                             {{ cat.name }}
@@ -63,13 +83,13 @@
 
                     </div>
 
-                    <div class="pt-6 border-t border-slate-50 flex items-center justify-end gap-4">
+                    <div class="pt-6 border-t border-slate-50 flex flex-col-reverse md:flex-row items-center justify-end gap-3 md:gap-4">
                         <a href="{% url 'subcategory_list' %}" 
-                           class="px-6 py-3 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-100 transition-all">
+                           class="w-full md:w-auto text-center px-6 py-3 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-100 transition-all">
                             Cancel
                         </a>
                         <button type="submit" 
-                                class="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-200 transition-all active:scale-95 text-sm">
+                                class="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-3.5 md:py-3 rounded-xl md:rounded-2xl font-bold shadow-lg shadow-indigo-200 transition-all active:scale-95 text-sm">
                             Save Changes
                         </button>
                     </div>
@@ -77,13 +97,13 @@
                 </form>
             </div>
 
-            <div class="mt-8 p-6 bg-amber-50 rounded-3xl border border-amber-100 flex gap-4">
+            <div class="mt-6 md:mt-8 p-4 md:p-6 bg-amber-50 rounded-2xl md:rounded-3xl border border-amber-100 flex gap-4">
                 <div class="bg-amber-100 w-10 h-10 rounded-full flex items-center justify-center shrink-0">
                     <i class="fas fa-info text-amber-600"></i>
                 </div>
                 <div>
-                    <h4 class="text-sm font-bold text-amber-900 uppercase tracking-tight">Pro Tip</h4>
-                    <p class="text-xs text-amber-700 leading-relaxed mt-1">
+                    <h4 class="text-[11px] md:text-sm font-bold text-amber-900 uppercase tracking-tight">Pro Tip</h4>
+                    <p class="text-[11px] md:text-xs text-amber-700 leading-relaxed mt-1">
                         Changing the parent category will automatically re-group all items within this subcategory under the new parent across your website navigation.
                     </p>
                 </div>
@@ -92,5 +112,20 @@
         </div>
     </main>
 
+    <script>
+        const openSidebar = document.getElementById('openSidebar');
+        const closeSidebar = document.getElementById('closeSidebar');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('mobile-sidebar-active');
+            overlay.classList.toggle('hidden');
+        }
+
+        openSidebar.addEventListener('click', toggleSidebar);
+        closeSidebar.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+    </script>
 </body>
 </html>

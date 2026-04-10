@@ -24,31 +24,55 @@
             }
         }
     </style>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+    </script>
 </head>
-<body class="bg-[#f8fafc] text-slate-900 antialiased font-sans flex min-h-screen">
+<body class="bg-[#f8fafc] text-slate-900 antialiased font-sans flex min-h-screen relative">
 
-    <aside class="w-64 bg-white border-r border-slate-200 sticky top-0 h-screen overflow-y-auto z-50 flex-shrink-0">
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 z-[60] hidden md:hidden transition-opacity"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-[70] w-64 bg-white border-r border-slate-200 transform -translate-x-full md:translate-x-0 md:sticky md:top-0 h-screen transition-transform duration-300 ease-in-out flex-shrink-0 overflow-y-auto">
+        <div class="p-6 flex justify-between items-center md:hidden border-b border-slate-100 mb-2">
+            <span class="font-black text-indigo-600 uppercase tracking-widest text-xs">Admin Panel</span>
+            <button onclick="toggleSidebar()" class="text-slate-400 p-2">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
         {% include 'admin/admin_navbar.html' %}
     </aside>
 
     <main class="flex-1 min-w-0">
-        <div class="max-w-4xl mx-auto px-6 py-10">
+        <header class="md:hidden flex items-center justify-between p-4 bg-white border-b border-slate-200 sticky top-0 z-40">
+            <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-xl border border-slate-200 text-slate-600">
+                <i class="fas fa-bars-staggered"></i>
+            </button>
+            <span class="font-black text-slate-900 text-xs uppercase tracking-widest">Update Category</span>
+            <div class="w-10"></div> 
+        </header>
+
+        <div class="max-w-4xl mx-auto px-4 md:px-8 py-6 md:py-10">
             
             <div class="mb-8">
-                <nav class="flex items-center space-x-2 text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
+                <nav class="flex items-center space-x-2 text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
                     <a href="{% url 'category_list' %}" class="hover:text-indigo-600">Categories</a>
-                    <i class="fas fa-chevron-right text-[10px]"></i>
-                    <span class="text-slate-900">Edit Category</span>
+                    <i class="fas fa-chevron-right text-[8px] md:text-[10px]"></i>
+                    <span class="text-slate-900">Edit</span>
                 </nav>
-                <h1 class="text-3xl font-black tracking-tight text-slate-900">Update Category</h1>
-                <p class="text-slate-500 mt-1">Modify category details and branding assets.</p>
+                <h1 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900">Update Category</h1>
+                <p class="text-sm text-slate-500 mt-1">Modify category details and branding assets.</p>
             </div>
 
-            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden">
-                <form method="POST" enctype="multipart/form-data" class="p-8 md:p-10">
+            <div class="bg-white rounded-2xl md:rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden">
+                <form method="POST" enctype="multipart/form-data" class="p-6 md:p-10">
                     {% csrf_token %}
                     
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-10">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10">
                         
                         <div class="md:col-span-4 flex flex-col items-center">
                             <label class="form-label text-center w-full">Category Image</label>
@@ -66,7 +90,7 @@
                                 </div>
                                 
                                 <label for="image-upload" class="absolute inset-0 flex items-center justify-center bg-indigo-600/0 group-hover:bg-indigo-600/10 cursor-pointer rounded-3xl transition-all">
-                                    <div class="bg-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center text-indigo-600 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all">
+                                    <div class="bg-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center text-indigo-600 md:opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all">
                                         <i class="fas fa-camera"></i>
                                     </div>
                                     <input type="file" name="image" id="image-upload" class="hidden" accept="image/*">
@@ -88,11 +112,11 @@
                                 <textarea name="description" id="description" rows="5" placeholder="Describe what products belong here..." class="form-input resize-none">{{ category.description }}</textarea>
                             </div>
 
-                            <div class="pt-4 flex items-center gap-4">
-                                <button type="submit" class="btn-primary flex-1">
+                            <div class="pt-4 flex flex-col sm:flex-row items-center gap-4">
+                                <button type="submit" class="btn-primary w-full sm:flex-1">
                                     <i class="fas fa-save mr-2"></i> Save Changes
                                 </button>
-                                <a href="{% url 'category_list' %}" class="btn-cancel px-8">
+                                <a href="{% url 'category_list' %}" class="btn-cancel w-full sm:px-8">
                                     Cancel
                                 </a>
                             </div>
@@ -102,12 +126,12 @@
                 </form>
             </div>
 
-            <div class="mt-10 p-6 bg-rose-50/50 border border-rose-100 rounded-2xl flex items-center justify-between">
-                <div>
+            <div class="mt-10 p-6 bg-rose-50/50 border border-rose-100 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-center sm:text-left">
                     <h4 class="text-rose-800 font-bold text-sm">Delete Category</h4>
                     <p class="text-rose-600/70 text-xs">Careful, this action cannot be undone and may affect linked products.</p>
                 </div>
-                <button type="button" class="px-4 py-2 bg-white border border-rose-200 text-rose-600 rounded-lg text-xs font-bold hover:bg-rose-600 hover:text-white transition-all">
+                <button type="button" class="w-full sm:w-auto px-4 py-2 bg-white border border-rose-200 text-rose-600 rounded-lg text-xs font-bold hover:bg-rose-600 hover:text-white transition-all">
                     Remove Category
                 </button>
             </div>
