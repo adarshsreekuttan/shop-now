@@ -24,7 +24,7 @@ def register(request):
         password=request.POST.get('password')
         if User.objects.filter(email=email).exists():
             messages.error(request,'email already registered')
-            return redirect('seller_registration')
+            return redirect('register')
         if password!=request.POST.get('confirm_password'):
             messages.error(request,'password in not matched')
             return redirect('register')
@@ -47,7 +47,7 @@ def register(request):
                 shop_logo=request.FILES.get('shop_logo')      
                 )
         messages.success(request,'succesfully created seller account')
-        return redirect('seller_login')     
+        return redirect('user_login')     
     return render(request,"seller/register.html")
 
 def seller_logout(request):
