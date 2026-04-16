@@ -50,29 +50,6 @@ def register(request):
         return redirect('seller_login')     
     return render(request,"seller/register.html")
 
-# def seller_login(request):
-#     if request.method == "POST":
-#         email = request.POST.get('seller_email')
-#         password = request.POST.get('seller_password')
-
-#         user = authenticate(request, username=email, password=password)
-
-#         if user is None:
-#             messages.error(request, "Invalid email or password")
-#             return redirect('seller_login')
-
-#        
-
-#         sellerprofile = user.seller_profile
-
-#         if not sellerprofile.approved:
-#             messages.error(request, "Your seller account is waiting for admin approval")
-#             return redirect('seller_login')
-
-#         login(request, user)
-#         return redirect('seller_home')
-
-#     return render(request, "seller/seller_login.html")
 def seller_logout(request):
      logout(request)
      return redirect('user_login')
@@ -363,15 +340,18 @@ def seller_order_status(request,id):
     return redirect('seller_orders')
 
 def pending_order(request):
-    order=Order.objects.filter(status ="pending")
+    seller=SellerProfile.objects.get(user=request.user)
+    order=Order.objects.filter(orderitem__product__seller=seller,status ="pending")
     return render(request,"seller/pending_order.html",{'order':order})
 
 def ongoing_order(request):
-    order=Order.objects.filter(status ="shipped")
+    seller=SellerProfile.objects.get(user=request.user)
+    order=Order.objects.filter(orderitem__product__seller=seller,status =["shipped","processing"])
     return render(request,"seller/ongoing_order.html",{'order':order})
 
 def finished_order(request):
-    order=Order.objects.filter(status="delivered")
+    seller=SellerProfile.objects.get(user=request.user)
+    order=Order.objects.filter(orderitem__product__seller=seller,status=["delivered","cancelled"])
     return render(request,'seller/finished_order.html',{'order':order})
 
 @seller_required
