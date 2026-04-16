@@ -5,7 +5,7 @@ from custom_admin import views
 
 urlpatterns = [
   
-    # path('login/', auth_views.LoginView.as_view(), name='login'),
+    
     path('admin_dashboard/',views.admin_dashboard,name='admin_dashboard'),
     path('pending_products/',views.admin_pending_products,name='pending_products'),
     path('product_view/',views.products_view,name='product_view'),
@@ -43,6 +43,7 @@ urlpatterns = [
     path('deactive_user_list',views.deactive_user_list,name='deactive_user_list'),
     path('reapprove_user/<int:id>/',views.reapprove_user,name='reapprove_user'),
     path('deactive_seller_list',views.deactive_seller_list,name='deactive_seller_list'),
-     path('reapprove_seller/<int:id>/',views.reapprove_seller,name='reapprove_seller'),
+    path('reapprove_seller/<int:id>/',views.reapprove_seller,name='reapprove_seller'),
+
 
 ]

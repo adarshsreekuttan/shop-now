@@ -13,7 +13,6 @@
             .info-value { @apply text-sm font-bold text-slate-900 break-words; }
             .status-pill { @apply px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border flex items-center w-fit; }
         }
-        /* Custom scrollbar for mobile table */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -57,17 +56,8 @@
                         <a href="{% url 'order_view' %}" class="text-[10px] md:text-xs font-bold text-indigo-600 hover:text-indigo-800 transition flex items-center mb-3 uppercase tracking-widest">
                             <i class="fas fa-arrow-left mr-2"></i> Back to Orders
                         </a>
-                        <h1 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900">Order #ORD-{{ order.id|stringformat:"05d" }}</h1>
-                        <p class="text-slate-500 font-medium text-sm">Placed on {{ order.created_at|date:"F d, Y @ H:i" }}</p>
-                    </div>
-
-                    <div class="flex flex-col sm:flex-row items-center gap-3">
-                        <button class="w-full sm:w-auto bg-white border border-slate-200 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-50 transition shadow-sm">
-                            <i class="fas fa-print mr-2"></i> Print Invoice
-                        </button>
-                        <button class="w-full sm:w-auto bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">
-                            Update Status
-                        </button>
+                        <h1 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900">Order #{{ order.id }}</h1>
+                        <p class="text-slate-500 font-medium text-sm">Placed on {{ order.created_at|date:"F d, Y" }}</p>
                     </div>
                 </div>
 
@@ -77,7 +67,7 @@
                             <i class="fas fa-user"></i>
                         </div>
                         <p class="info-label">Customer</p>
-                        <p class="info-value">{{ order.user.user}}</p>
+                        <p class="info-value">{{ order.user.username }}</p>
                         <p class="text-xs text-slate-500 font-medium mt-1">{{ order.user.email }}</p>
                     </div>
 
@@ -86,7 +76,7 @@
                             <i class="fas fa-location-dot"></i>
                         </div>
                         <p class="info-label">Shipping To</p>
-                        <p class="info-value leading-relaxed">{{ order.user.address }}</p>
+                        <p class="info-value leading-relaxed">{{ order.address|default:"No address provided" }}</p>
                         <p class="text-xs text-slate-500 font-medium mt-1">Standard Delivery</p>
                     </div>
 
@@ -96,8 +86,8 @@
                         </div>
                         <p class="info-label">Payment & Status</p>
                         <div class="flex flex-row sm:flex-col lg:flex-row justify-between sm:justify-start items-center sm:items-start lg:items-center gap-2">
-                            <span class="status-pill {% if order.status == 'delivered' %}bg-emerald-50 text-emerald-700 border-emerald-100{% else %}bg-blue-50 text-blue-700 border-blue-100{% endif %}">
-                                {{ order.user.status|upper }}
+                            <span class="status-pill {% if order.status == 'Delivered' %}bg-emerald-50 text-emerald-700 border-emerald-100{% else %}bg-blue-50 text-blue-700 border-blue-100{% endif %}">
+                                {{ order.status|upper }}
                             </span>
                             <p class="text-sm font-black text-slate-900 tracking-tight">Total: ${{ order.total_price }}</p>
                         </div>
@@ -124,7 +114,9 @@
                                     <td class="px-6 md:px-8 py-5">
                                         <div class="flex items-center gap-4">
                                             <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-100">
+                                                {% if item.product.image %}
                                                 <img src="{{ item.product.image.url }}" class="w-full h-full object-cover">
+                                                {% endif %}
                                             </div>
                                             <div class="min-w-0">
                                                 <p class="text-sm font-bold text-slate-900 truncate max-w-[150px] md:max-w-none">{{ item.product.name }}</p>
@@ -145,7 +137,7 @@
                                 {% empty %}
                                 <tr>
                                     <td colspan="4" class="px-8 py-10 text-center text-slate-400 italic text-sm">
-                                        No item details available for this order.
+                                        No item details available.
                                     </td>
                                 </tr>
                                 {% endfor %}

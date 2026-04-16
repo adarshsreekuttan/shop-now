@@ -96,7 +96,7 @@
                     <div class="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="p-5 md:p-6 border-b border-gray-100 flex justify-between items-center">
                             <h2 class="font-bold text-gray-800">Recent Orders</h2>
-                            <a href="#" class="text-indigo-600 text-sm font-semibold hover:text-indigo-700 transition-colors">View All</a>
+                            <a href="{% url 'order_view' %}" class="text-indigo-600 text-sm font-semibold hover:text-indigo-700 transition-colors">View All</a>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left min-w-[600px]">
@@ -109,21 +109,40 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-100">
-                                    <tr class="hover:bg-gray-50/50 transition-colors">
-                                        <td class="px-6 py-4 text-sm font-medium text-gray-900">#12903</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">{{ total_users }}</td>
-                                        <td class="px-6 py-4">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                                                Delivered
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 text-right">
-                                            <button class="text-gray-400 hover:text-indigo-600 p-2">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    </tbody>
+                                   {% for order in orders %}
+                                   <tr class="hover:bg-gray-50/50 transition-colors">
+                                   <td class="px-6 py-4 text-sm font-medium text-gray-900">
+                                    {{ order.id }}
+                                   </td>
+        
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                   {{ order.customer_name }}
+                                </td>
+        
+                                <td class="px-6 py-4">
+            {% if order.status == 'Delivered' %}
+                <span class="inline-flex items-center px-2.5 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                    Delivered
+                </span>
+            {% elif order.status == 'Pending' %}
+                <span class="inline-flex items-center px-2.5 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
+                    Pending
+                </span>
+            {% else %}
+                <span class="inline-flex items-center px-2.5 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+                    {{ order.status }}
+                </span>
+            {% endif %}
+        </td>
+        
+        <td class="px-6 py-4 text-right">
+            <a href="/orders/{{ order.id }}" class="text-gray-400 hover:text-indigo-600 p-2 transition-colors">
+                <i class="fas fa-eye"></i>
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
                             </table>
                         </div>
                     </div>

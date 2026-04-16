@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Status | Order #{{ order.id }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-4">
+
+    <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
+        <div class="p-8 md:p-10 text-center">
+            <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-arrows-rotate text-2xl"></i>
+            </div>
+
+            <h1 class="text-2xl font-black text-slate-900 mb-2">Update Order Status</h1>
+            <p class="text-slate-500 font-medium mb-8">Order #{{ order.id }}</p>
+
+            <div class="flex items-center justify-center gap-4 mb-10">
+                <div class="text-center">
+                    <span class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Current</span>
+                    <span class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold uppercase">
+                        {{ order.status }}
+                    </span>
+                </div>
+                
+                <i class="fas fa-arrow-right text-slate-300 mt-4"></i>
+
+                <div class="text-center">
+                    <span class="block text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Next Step</span>
+                    <span class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold uppercase">
+                        {% if order.status == 'Pending' %}Processing
+                        {% elif order.status == 'Processing' %}Shipped
+                        {% elif order.status == 'Shipped' %}Delivered
+                        {% else %}Completed{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <form method="POST" action="{% url 'update_order_status' order.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="w-full sm:w-auto bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">
+                    Move to {% if order.status == 'Pending' %}Processing{% elif order.status == 'Processing' %}Shipped{% else %}Next Step{% endif %}
+                  </button>
+                </form>
+                
+                <a href="{% url 'order_detail' order.id %}" class="block w-full py-4 text-slate-400 font-bold text-sm hover:text-slate-600 transition">
+                    Cancel and Go Back
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

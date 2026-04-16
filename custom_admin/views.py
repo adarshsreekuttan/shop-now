@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth import login,logout
 from django.contrib.auth.decorators import login_required
 from customer.models import *
@@ -348,3 +348,19 @@ def reapprove_seller(request,id):
     seller.is_active = True
     seller.save()
     return redirect('deactive_seller_list')
+
+
+@admin_required
+def update_order_status(request, id):
+    order = get_object_or_404(Order, id=id)
+
+    if order.status == 'Pending':
+        order.status = 'Processing'
+    elif order.status == 'Processing':
+        order.status = 'Shipped'
+    elif order.status == 'Shipped':
+        order.status = 'Delivered'
+
+    order.save()
+
+    return redirect('order_list') 
